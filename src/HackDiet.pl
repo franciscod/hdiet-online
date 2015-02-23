@@ -88,6 +88,7 @@ This program is in the public domain.
     use Sys::Syslog;
 
     my cgiBin = "/usr/lib/cgi-bin"
+    my dataDir = "/var/lib/hackdiet"
 
     use lib "$cgiBin/HDiet/Cgi";
     use CGI;
@@ -161,8 +162,6 @@ This program is in the public domain.
 
     #   Override site address in otherwise relative URLs
     my $homeBase = "/hackdiet/online";
-
-    my $dataBase = "/server/pub/hackdiet";
 
 
     use Getopt::Long;
@@ -257,7 +256,7 @@ This program is in the public domain.
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -293,8 +292,8 @@ This program is in the public domain.
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -305,8 +304,8 @@ This program is in the public domain.
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -314,8 +313,8 @@ This program is in the public domain.
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -400,9 +399,9 @@ EOD
 
 
     my $mlog = HDiet::monthlog->new();
-    if (-f "/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb") {
-        open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb") ||
-            die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb");
+    if (-f "$dataDir/Users/$user_file_name/$CGIargs{m}.hdb") {
+        open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$CGIargs{m}.hdb") ||
+            die("Cannot open monthly log file $dataDir/Users/$user_file_name/$CGIargs{m}.hdb");
         $mlog->load(\*FL);
         close(FL);
     } else {
@@ -422,8 +421,8 @@ EOD
         for (my $m = $#logs; $m >= 0; $m--) {
             if ($logs[$m] lt $cmon) {
                 my $llog = HDiet::monthlog->new();
-                open(LL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$m].hdb") ||
-                    die("Cannot open previous monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$m].hdb");
+                open(LL, "<:utf8", "$dataDir/Users/$user_file_name/$logs[$m].hdb") ||
+                    die("Cannot open previous monthly log file $dataDir/Users/$user_file_name/$logs[$m].hdb");
                 $llog->load(\*LL);
                 close(LL);
                 for (my $d = $llog->monthdays(); $d >= 1; $d--) {
@@ -467,7 +466,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -503,8 +502,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -515,8 +514,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -524,8 +523,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -568,7 +567,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -604,8 +603,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -616,8 +615,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -625,8 +624,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -674,9 +673,9 @@ EOD
 
 
     my $mlog = HDiet::monthlog->new();
-    if (-f "/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb") {
-        open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb") ||
-            die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb");
+    if (-f "$dataDir/Users/$user_file_name/$CGIargs{m}.hdb") {
+        open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$CGIargs{m}.hdb") ||
+            die("Cannot open monthly log file $dataDir/Users/$user_file_name/$CGIargs{m}.hdb");
         $mlog->load(\*FL);
         close(FL);
     } else {
@@ -696,8 +695,8 @@ EOD
         for (my $m = $#logs; $m >= 0; $m--) {
             if ($logs[$m] lt $cmon) {
                 my $llog = HDiet::monthlog->new();
-                open(LL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$m].hdb") ||
-                    die("Cannot open previous monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$m].hdb");
+                open(LL, "<:utf8", "$dataDir/Users/$user_file_name/$logs[$m].hdb") ||
+                    die("Cannot open previous monthly log file $dataDir/Users/$user_file_name/$logs[$m].hdb");
                 $llog->load(\*LL);
                 close(LL);
                 for (my $d = $llog->monthdays(); $d >= 1; $d--) {
@@ -730,7 +729,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -766,8 +765,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -778,8 +777,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -787,8 +786,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -836,9 +835,9 @@ EOD
 
 
     my $mlog = HDiet::monthlog->new();
-    if (-f "/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb") {
-        open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb") ||
-            die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb");
+    if (-f "$dataDir/Users/$user_file_name/$CGIargs{m}.hdb") {
+        open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$CGIargs{m}.hdb") ||
+            die("Cannot open monthly log file $dataDir/Users/$user_file_name/$CGIargs{m}.hdb");
         $mlog->load(\*FL);
         close(FL);
     } else {
@@ -858,8 +857,8 @@ EOD
         for (my $m = $#logs; $m >= 0; $m--) {
             if ($logs[$m] lt $cmon) {
                 my $llog = HDiet::monthlog->new();
-                open(LL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$m].hdb") ||
-                    die("Cannot open previous monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$m].hdb");
+                open(LL, "<:utf8", "$dataDir/Users/$user_file_name/$logs[$m].hdb") ||
+                    die("Cannot open previous monthly log file $dataDir/Users/$user_file_name/$logs[$m].hdb");
                 $llog->load(\*LL);
                 close(LL);
                 for (my $d = $llog->monthdays(); $d >= 1; $d--) {
@@ -895,7 +894,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -932,8 +931,8 @@ EOD
 
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -944,8 +943,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -953,8 +952,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -963,7 +962,7 @@ EOD
     }
 
 
-    my $nlogs = `ls -1 /server/pub/hackdiet/Users/$user_file_name/????-??.hdb 2>/dev/null | wc -l`;
+    my $nlogs = `ls -1 $dataDir/Users/$user_file_name/????-??.hdb 2>/dev/null | wc -l`;
     chomp($nlogs);
 
     if ($nlogs > 0) {
@@ -975,7 +974,7 @@ EOD
         print($fh "Content-disposition: attachment; filename=\"hackdiet_log_backup_$date.zip\"\r\n");
         print($fh "\r\n");
 
-        system("zip -q -j - /server/pub/hackdiet/Users/$user_file_name/????-??.hdb");
+        system("zip -q -j - $dataDir/Users/$user_file_name/????-??.hdb");
         exit(0);
     }
 
@@ -1045,7 +1044,7 @@ write_XHTML_epilogue($fh, $homeBase);
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -1081,8 +1080,8 @@ write_XHTML_epilogue($fh, $homeBase);
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -1093,8 +1092,8 @@ write_XHTML_epilogue($fh, $homeBase);
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -1102,8 +1101,8 @@ write_XHTML_epilogue($fh, $homeBase);
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -1183,7 +1182,7 @@ write_XHTML_epilogue($fh, $homeBase);
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -1219,8 +1218,8 @@ write_XHTML_epilogue($fh, $homeBase);
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -1231,8 +1230,8 @@ write_XHTML_epilogue($fh, $homeBase);
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -1240,8 +1239,8 @@ write_XHTML_epilogue($fh, $homeBase);
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -1280,8 +1279,8 @@ EOD
     for (my $i = 0; $i <= $#logs; $i++) {
         if (($logs[$i] ge $start_ym) && ($logs[$i] le $end_ym)) {
             my $mlog = HDiet::monthlog->new();
-            open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
-                die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+            open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$logs[$i].hdb") ||
+                die("Cannot open monthly log file $dataDir/Users/$user_file_name/$logs[$i].hdb");
             $mlog->load(\*FL);
             close(FL);
 
@@ -1305,7 +1304,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -1341,8 +1340,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -1353,8 +1352,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -1362,8 +1361,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -1403,8 +1402,8 @@ EOD
     for (my $i = 0; $i <= $#logs; $i++) {
         if (($logs[$i] ge $start_ym) && ($logs[$i] le $end_ym)) {
             my $mlog = HDiet::monthlog->new();
-            open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
-                die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+            open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$logs[$i].hdb") ||
+                die("Cannot open monthly log file $dataDir/Users/$user_file_name/$logs[$i].hdb");
             $mlog->load(\*FL);
             close(FL);
 
@@ -1423,7 +1422,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -1459,8 +1458,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -1471,8 +1470,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -1480,8 +1479,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -1499,8 +1498,8 @@ EOD
     for (my $i = 0; $i <= $#logs; $i++) {
         if (($logs[$i] ge $start_ym) && ($logs[$i] le $end_ym)) {
             my $mlog = HDiet::monthlog->new();
-            open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
-                die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+            open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$logs[$i].hdb") ||
+                die("Cannot open monthly log file $dataDir/Users/$user_file_name/$logs[$i].hdb");
             $mlog->load(\*FL);
             close(FL);
 
@@ -1519,7 +1518,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -1555,8 +1554,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -1567,8 +1566,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -1576,8 +1575,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -1595,8 +1594,8 @@ EOD
     for (my $i = 0; $i <= $#logs; $i++) {
         if (($logs[$i] ge $start_ym) && ($logs[$i] le $end_ym)) {
             my $mlog = HDiet::monthlog->new();
-            open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
-                die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+            open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$logs[$i].hdb") ||
+                die("Cannot open monthly log file $dataDir/Users/$user_file_name/$logs[$i].hdb");
             $mlog->load(\*FL);
             close(FL);
 
@@ -1758,8 +1757,8 @@ EOD
 
         if ($cookieLogin) {
             $user_file_name = quoteUserName($cookieUser);
-            if (!(-f "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu")
-                || (!open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu"))) {
+            if (!(-f "$dataDir/Users/$user_file_name/UserAccount.hdu")
+                || (!open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu"))) {
 
 
     my @lt = localtime(time());
@@ -1795,8 +1794,8 @@ EOD
     #   Verify user account directory exists and contains
     #   valid user information file.
     $user_file_name = quoteUserName($CGIargs{HDiet_username});
-    if (!(-f "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu")
-        || (!open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu"))) {
+    if (!(-f "$dataDir/Users/$user_file_name/UserAccount.hdu")
+        || (!open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu"))) {
 
 
     my @lt = localtime(time());
@@ -1860,14 +1859,14 @@ EOD
         }
 
 
-    if ((!$readOnly) && (-f "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")
-        && open(FS, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")) {
+    if ((!$readOnly) && (-f "$dataDir/Users/$user_file_name/ActiveSession.hda")
+        && open(FS, "<:utf8", "$dataDir/Users/$user_file_name/ActiveSession.hda")) {
         my $asn = load_active_session(\*FS);
         close(FS);
-        unlink("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
-        clusterDelete("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
-        unlink("/server/pub/hackdiet/Sessions/$asn.hds");
-        clusterDelete("/server/pub/hackdiet/Sessions/$asn.hds");
+        unlink("$dataDir/Users/$user_file_name/ActiveSession.hda");
+        clusterDelete("$dataDir/Users/$user_file_name/ActiveSession.hda");
+        unlink("$dataDir/Sessions/$asn.hds");
+        clusterDelete("$dataDir/Sessions/$asn.hds");
         append_history($user_file_name, 3);
     }
 
@@ -1878,33 +1877,33 @@ EOD
     $s->{read_only} = $readOnly;
     $s->{handheld} = 1 if $CGIargs{HDiet_handheld};
     $s->{cookie} = $cookieLogin;
-    open(FS, ">:utf8", "/server/pub/hackdiet/Sessions/$s->{session_id}.hds") ||
-        die("Cannot create session file /server/pub/hackdiet/Sessions/$s->{session_id}.hds");
+    open(FS, ">:utf8", "$dataDir/Sessions/$s->{session_id}.hds") ||
+        die("Cannot create session file $dataDir/Sessions/$s->{session_id}.hds");
     $s->save(\*FS);
     close(FS);
-    clusterCopy("/server/pub/hackdiet/Sessions/$s->{session_id}.hds");
+    clusterCopy("$dataDir/Sessions/$s->{session_id}.hds");
 
     #   Add the ActiveSession.hda back-link to the user directory
     if (!$readOnly) {
-        open(FS, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda") ||
-            die("Cannot create active session file /server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
+        open(FS, ">:utf8", "$dataDir/Users/$user_file_name/ActiveSession.hda") ||
+            die("Cannot create active session file $dataDir/Users/$user_file_name/ActiveSession.hda");
         $s->save_active_session(\*FS);
         close(FS);
-        clusterCopy("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
+        clusterCopy("$dataDir/Users/$user_file_name/ActiveSession.hda");
     }
 
 
 
     #   Update the date and time of the last login by this user
     if ($readOnly) {
-        open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/LastLogin.hdl") ||
-           die("Cannot create last login file /server/pub/hackdiet/Users/$user_file_name/LastLogin.hdl");
+        open(FL, ">:utf8", "$dataDir/Users/$user_file_name/LastLogin.hdl") ||
+           die("Cannot create last login file $dataDir/Users/$user_file_name/LastLogin.hdl");
         print FL <<"EOD";
 1
 $s->{login_time}
 EOD
         close(FL);
-        clusterCopy("/server/pub/hackdiet/Users/$user_file_name/LastLogin.hdl");
+        clusterCopy("$dataDir/Users/$user_file_name/LastLogin.hdl");
 
         update_last_transaction($user_file_name);
     }
@@ -1963,7 +1962,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -2000,12 +1999,12 @@ EOD
 
 
     #   Delete active session file
-    unlink("/server/pub/hackdiet/Sessions/$CGIargs{s}.hds");
-    clusterDelete("/server/pub/hackdiet/Sessions/$CGIargs{s}.hds");
+    unlink("$dataDir/Sessions/$CGIargs{s}.hds");
+    clusterDelete("$dataDir/Sessions/$CGIargs{s}.hds");
 
     if (!$readOnly) {
-        unlink("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
-        clusterDelete("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
+        unlink("$dataDir/Users/$user_file_name/ActiveSession.hda");
+        clusterDelete("$dataDir/Users/$user_file_name/ActiveSession.hda");
         append_history($user_file_name, 2);
     }
 
@@ -2024,7 +2023,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -2060,8 +2059,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -2072,8 +2071,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -2081,8 +2080,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -2231,7 +2230,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -2267,8 +2266,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -2279,8 +2278,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -2288,8 +2287,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -2378,18 +2377,18 @@ EOD
 
     my $tfn = timeXML(time());
     $tfn =~ s/:/./g;            # Avoid idiot tar treating time as hostname
-    if ("/server/pub/hackdiet/Backups" ne '') {
-        do_command("( cd /server/pub/hackdiet/Backups; tar cfj ${user_file_name}_" .
+    if ("$dataDir/Backups" ne '') {
+        do_command("( cd $dataDir/Backups; tar cfj ${user_file_name}_" .
             $tfn . ".bz2 -C ../Users $user_file_name )");
-        clusterCopy("/server/pub/hackdiet/Backups/${user_file_name}_$tfn.bz2");
+        clusterCopy("$dataDir/Backups/${user_file_name}_$tfn.bz2");
     }
 
 
             my @months = $ui->enumerateMonths();
             for my $m (@months) {
-                unlink("/server/pub/hackdiet/Users/$user_file_name/$m.hdb") ||
-                   die("Cannot delete log file /server/pub/hackdiet/Users/$user_file_name/$m.hdb");
-                clusterDelete("/server/pub/hackdiet/Users/$user_file_name/$m.hdb");
+                unlink("$dataDir/Users/$user_file_name/$m.hdb") ||
+                   die("Cannot delete log file $dataDir/Users/$user_file_name/$m.hdb");
+                clusterDelete("$dataDir/Users/$user_file_name/$m.hdb");
             }
 
             append_history($user_file_name, 12);
@@ -2423,7 +2422,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -2459,8 +2458,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -2471,8 +2470,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -2480,8 +2479,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -2626,7 +2625,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -2662,8 +2661,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -2674,8 +2673,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -2683,8 +2682,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -2790,25 +2789,25 @@ EOD
         } else {
             if (!$readOnly) {
                 #   Delete active session file
-                unlink("/server/pub/hackdiet/Sessions/$CGIargs{s}.hds");
-                clusterDelete("/server/pub/hackdiet/Sessions/$CGIargs{s}.hds");
-                unlink("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
-                clusterDelete("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
+                unlink("$dataDir/Sessions/$CGIargs{s}.hds");
+                clusterDelete("$dataDir/Sessions/$CGIargs{s}.hds");
+                unlink("$dataDir/Users/$user_file_name/ActiveSession.hda");
+                clusterDelete("$dataDir/Users/$user_file_name/ActiveSession.hda");
 
 
     my $tfn = timeXML(time());
     $tfn =~ s/:/./g;            # Avoid idiot tar treating time as hostname
-    if ("/server/pub/hackdiet/Backups" ne '') {
-        do_command("( cd /server/pub/hackdiet/Backups; tar cfj ${user_file_name}_" .
+    if ("$dataDir/Backups" ne '') {
+        do_command("( cd $dataDir/Backups; tar cfj ${user_file_name}_" .
             $tfn . ".bz2 -C ../Users $user_file_name )");
-        clusterCopy("/server/pub/hackdiet/Backups/${user_file_name}_$tfn.bz2");
+        clusterCopy("$dataDir/Backups/${user_file_name}_$tfn.bz2");
     }
 
 
                 #   At this point the user is logged out.  We can now delete
                 #   the user directory and all its contents.
-                do_command("rm -rf /server/pub/hackdiet/Users/$user_file_name");
-                clusterRecursiveDelete("/server/pub/hackdiet/Users/$user_file_name");
+                do_command("rm -rf $dataDir/Users/$user_file_name");
+                clusterRecursiveDelete("$dataDir/Users/$user_file_name");
             }
 
             print $fh <<"EOD";
@@ -2837,7 +2836,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -2873,8 +2872,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -2885,8 +2884,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -2894,8 +2893,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -3141,7 +3140,7 @@ if (0) {        # Set to 1 to investigate reports of account creation problems
         push(@goofs, "User name is blank");
     } else {
         $user_file_name = quoteUserName($CGIargs{HDiet_username});
-        if (-d "/server/pub/hackdiet/Users/$user_file_name") {
+        if (-d "$dataDir/Users/$user_file_name") {
             push(@goofs, "User name is already taken: please choose another");
         }
     }
@@ -3157,7 +3156,7 @@ if (0) {        # Set to 1 to investigate reports of account creation problems
             } else {
                 $betaInvitation = $CGIargs{HDiet_invitation};
                 $betaInvitation =~ s/\W//g;
-                if (!(-f "/server/pub/hackdiet/Invitations/$betaInvitation.hdi")) {
+                if (!(-f "$dataDir/Invitations/$betaInvitation.hdi")) {
                     push(@goofs, "Beta test invitation is invalid or already used");
                 }
             }
@@ -3246,8 +3245,8 @@ EOD
     }
 
 
-    if (mkdir("/server/pub/hackdiet/Users/$user_file_name")) {
-        clusterMkdir("/server/pub/hackdiet/Users/$user_file_name");
+    if (mkdir("$dataDir/Users/$user_file_name")) {
+        clusterMkdir("$dataDir/Users/$user_file_name");
         my $ui = HDiet::user->new($CGIargs{HDiet_username});
 
     if (defined($CGIargs{HDiet_height_cm})) {
@@ -3295,11 +3294,11 @@ EOD
     }
 
 
-    open(FU, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, ">:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     $ui->save(\*FU);
     close(FU);
-    clusterCopy("/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    clusterCopy("$dataDir/Users/$user_file_name/UserAccount.hdu");
 
         $CGIargs{q} = 'login';
     } else {
@@ -3366,10 +3365,10 @@ EOD
 
     if (0) {
         if ($betaInvitation ne '') {
-            if (!unlink("/server/pub/hackdiet/Invitations/$betaInvitation.hdi")) {
-                print(STDERR "Unable to unlink /server/pub/hackdiet/Invitations/$betaInvitation.hdi\n");
+            if (!unlink("$dataDir/Invitations/$betaInvitation.hdi")) {
+                print(STDERR "Unable to unlink $dataDir/Invitations/$betaInvitation.hdi\n");
             }
-            clusterDelete("/server/pub/hackdiet/Invitations/$betaInvitation.hdi");
+            clusterDelete("$dataDir/Invitations/$betaInvitation.hdi");
         }
     }
 
@@ -3384,7 +3383,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -3420,8 +3419,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -3432,8 +3431,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -3441,8 +3440,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -3595,7 +3594,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -3631,8 +3630,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -3643,8 +3642,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -3652,8 +3651,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -3665,12 +3664,12 @@ EOD
 
     my %cookies;
 
-    opendir(CD, "/server/pub/hackdiet/RememberMe") ||
-        die("Cannot open directory /server/pub/hackdiet/RememberMe");
+    opendir(CD, "$dataDir/RememberMe") ||
+        die("Cannot open directory $dataDir/RememberMe");
     for my $f (grep(/\w+\.hdr/, readdir(CD))) {
-        open(FU, "<:utf8", "/server/pub/hackdiet/RememberMe/$f") ||
-#        open(FU, "<", "/server/pub/hackdiet/RememberMe/$f") ||                #### Poison cookie search
-            die("Cannot open persistent login /server/pub/hackdiet/RememberMe/$f");
+        open(FU, "<:utf8", "$dataDir/RememberMe/$f") ||
+#        open(FU, "<", "$dataDir/RememberMe/$f") ||                #### Poison cookie search
+            die("Cannot open persistent login $dataDir/RememberMe/$f");
         my $cookie = HDiet::cookie->new();
         $cookie->load(\*FU);
 #if ($cookie->{login_name} =~ m/^[ -~]*$/) { next; }                     #### Poison cookie search
@@ -3731,8 +3730,8 @@ EOD
         my $cook = $cookies{$f};
         if ($cook->{login_name} eq $ui->{login_name}) {
 #            $cook->describe($fh);
-            $ndel += unlink("/server/pub/hackdiet/RememberMe/$f.hdr");
-            clusterDelete("/server/pub/hackdiet/RememberMe/$f.hdr");
+            $ndel += unlink("$dataDir/RememberMe/$f.hdr");
+            clusterDelete("$dataDir/RememberMe/$f.hdr");
         }
     }
 #print($fh "</pre>\n");
@@ -3773,7 +3772,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -3809,8 +3808,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -3821,8 +3820,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -3830,8 +3829,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -4029,11 +4028,11 @@ EOD
     }
 
 
-    open(FU, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, ">:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     $ui->save(\*FU);
     close(FU);
-    clusterCopy("/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    clusterCopy("$dataDir/Users/$user_file_name/UserAccount.hdu");
 
     }
 
@@ -4159,8 +4158,8 @@ EOD
     #   Verify user account directory exists and contains
     #   valid user information file.
     my $user_file_name = quoteUserName($CGIargs{HDiet_username});
-    if (!(-f "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu")
-        || (!open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu"))) {
+    if (!(-f "$dataDir/Users/$user_file_name/UserAccount.hdu")
+        || (!open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu"))) {
 
 
     my @lt = localtime(time());
@@ -4242,14 +4241,14 @@ EOD
 
 
 
-    if ((!$readOnly) && (-f "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")
-        && open(FS, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")) {
+    if ((!$readOnly) && (-f "$dataDir/Users/$user_file_name/ActiveSession.hda")
+        && open(FS, "<:utf8", "$dataDir/Users/$user_file_name/ActiveSession.hda")) {
         my $asn = load_active_session(\*FS);
         close(FS);
-        unlink("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
-        clusterDelete("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
-        unlink("/server/pub/hackdiet/Sessions/$asn.hds");
-        clusterDelete("/server/pub/hackdiet/Sessions/$asn.hds");
+        unlink("$dataDir/Users/$user_file_name/ActiveSession.hda");
+        clusterDelete("$dataDir/Users/$user_file_name/ActiveSession.hda");
+        unlink("$dataDir/Sessions/$asn.hds");
+        clusterDelete("$dataDir/Sessions/$asn.hds");
         append_history($user_file_name, 3);
     }
 
@@ -4257,11 +4256,11 @@ EOD
     $ui->resetPassword(8);
 
 
-    open(FU, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, ">:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     $ui->save(\*FU);
     close(FU);
-    clusterCopy("/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    clusterCopy("$dataDir/Users/$user_file_name/UserAccount.hdu");
 
 
 
@@ -4343,7 +4342,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -4379,8 +4378,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -4391,8 +4390,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -4400,8 +4399,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -4465,9 +4464,9 @@ EOD
 
 
     my $mlog = HDiet::monthlog->new();
-    if (-f "/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb") {
-        open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb") ||
-            die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb");
+    if (-f "$dataDir/Users/$user_file_name/$CGIargs{m}.hdb") {
+        open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$CGIargs{m}.hdb") ||
+            die("Cannot open monthly log file $dataDir/Users/$user_file_name/$CGIargs{m}.hdb");
         $mlog->load(\*FL);
         close(FL);
     } else {
@@ -4487,8 +4486,8 @@ EOD
         for (my $m = $#logs; $m >= 0; $m--) {
             if ($logs[$m] lt $cmon) {
                 my $llog = HDiet::monthlog->new();
-                open(LL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$m].hdb") ||
-                    die("Cannot open previous monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$m].hdb");
+                open(LL, "<:utf8", "$dataDir/Users/$user_file_name/$logs[$m].hdb") ||
+                    die("Cannot open previous monthly log file $dataDir/Users/$user_file_name/$logs[$m].hdb");
                 $llog->load(\*LL);
                 close(LL);
                 for (my $d = $llog->monthdays(); $d >= 1; $d--) {
@@ -4815,7 +4814,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -4852,8 +4851,8 @@ EOD
 
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -4864,8 +4863,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -4873,8 +4872,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -4922,9 +4921,9 @@ EOD
 
 
     my $mlog = HDiet::monthlog->new();
-    if (-f "/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb") {
-        open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb") ||
-            die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb");
+    if (-f "$dataDir/Users/$user_file_name/$CGIargs{m}.hdb") {
+        open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$CGIargs{m}.hdb") ||
+            die("Cannot open monthly log file $dataDir/Users/$user_file_name/$CGIargs{m}.hdb");
         $mlog->load(\*FL);
         close(FL);
     } else {
@@ -4944,8 +4943,8 @@ EOD
         for (my $m = $#logs; $m >= 0; $m--) {
             if ($logs[$m] lt $cmon) {
                 my $llog = HDiet::monthlog->new();
-                open(LL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$m].hdb") ||
-                    die("Cannot open previous monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$m].hdb");
+                open(LL, "<:utf8", "$dataDir/Users/$user_file_name/$logs[$m].hdb") ||
+                    die("Cannot open previous monthly log file $dataDir/Users/$user_file_name/$logs[$m].hdb");
                 $llog->load(\*LL);
                 close(LL);
                 for (my $d = $llog->monthdays(); $d >= 1; $d--) {
@@ -4968,21 +4967,21 @@ EOD
 
     if (($changes > 0) && (!$readOnly)) {
         $mlog->{last_modification_time} = time();
-        open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb") ||
-            die("Cannot update monthly log file /server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb");
+        open(FL, ">:utf8", "$dataDir/Users/$user_file_name/$CGIargs{m}.hdb") ||
+            die("Cannot update monthly log file $dataDir/Users/$user_file_name/$CGIargs{m}.hdb");
         $mlog->save(\*FL);
         close(FL);
-        clusterCopy("/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb");
+        clusterCopy("$dataDir/Users/$user_file_name/$CGIargs{m}.hdb");
 
         if ($ui->{badge_trend} != 0) {
 
-    open(FB, ">/server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png") ||
-        die("Cannot update monthly log file /server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png");
+    open(FB, ">$dataDir/Users/$user_file_name/BadgeImageNew.png") ||
+        die("Cannot update monthly log file $dataDir/Users/$user_file_name/BadgeImageNew.png");
     my $hist = HDiet::history->new($ui, $user_file_name);
     $hist->drawBadgeImage(\*FB, $ui->{badge_trend});
     close(FB);
-    do_command("mv /server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png /server/pub/hackdiet/Users/$user_file_name/BadgeImage.png");
-    clusterCopy("/server/pub/hackdiet/Users/$user_file_name/BadgeImage.png");
+    do_command("mv $dataDir/Users/$user_file_name/BadgeImageNew.png $dataDir/Users/$user_file_name/BadgeImage.png");
+    clusterCopy("$dataDir/Users/$user_file_name/BadgeImage.png");
 
         }
 
@@ -5022,7 +5021,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -5058,8 +5057,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -5070,8 +5069,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -5079,8 +5078,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -5258,7 +5257,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -5294,8 +5293,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -5306,8 +5305,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -5315,8 +5314,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -5821,7 +5820,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -5857,8 +5856,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -5869,8 +5868,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -5878,8 +5877,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -6639,7 +6638,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -6675,8 +6674,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -6687,8 +6686,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -6696,8 +6695,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -6736,11 +6735,11 @@ EOD
 
     if (!$readOnly) {
 
-    open(FU, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, ">:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     $ui->save(\*FU);
     close(FU);
-    clusterCopy("/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    clusterCopy("$dataDir/Users/$user_file_name/UserAccount.hdu");
 
         append_history($user_file_name, 15);
         update_last_transaction($user_file_name);
@@ -6756,7 +6755,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -6792,8 +6791,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -6804,8 +6803,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -6813,8 +6812,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -7285,7 +7284,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -7321,8 +7320,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -7333,8 +7332,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -7342,8 +7341,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -7482,7 +7481,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -7518,8 +7517,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -7530,8 +7529,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -7539,8 +7538,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -7696,9 +7695,9 @@ EOD
         $mlog = HDiet::monthlog->new();
         $mondb{$monkey} = $mlog;
         $monchanges{$monkey} = 0;
-        if (-f "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") {
-            open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") ||
-                die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$monkey.hdb");
+        if (-f "$dataDir/Users/$user_file_name/$monkey.hdb") {
+            open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$monkey.hdb") ||
+                die("Cannot open monthly log file $dataDir/Users/$user_file_name/$monkey.hdb");
             $mlog->load(\*FL);
             close(FL);
         } else {
@@ -7836,9 +7835,9 @@ EOD
         $mlog = HDiet::monthlog->new();
         $mondb{$monkey} = $mlog;
         $monchanges{$monkey} = 0;
-        if (-f "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") {
-            open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") ||
-                die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$monkey.hdb");
+        if (-f "$dataDir/Users/$user_file_name/$monkey.hdb") {
+            open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$monkey.hdb") ||
+                die("Cannot open monthly log file $dataDir/Users/$user_file_name/$monkey.hdb");
             $mlog->load(\*FL);
             close(FL);
         } else {
@@ -7933,9 +7932,9 @@ EOD
         $mlog = HDiet::monthlog->new();
         $mondb{$monkey} = $mlog;
         $monchanges{$monkey} = 0;
-        if (-f "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") {
-            open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") ||
-                die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$monkey.hdb");
+        if (-f "$dataDir/Users/$user_file_name/$monkey.hdb") {
+            open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$monkey.hdb") ||
+                die("Cannot open monthly log file $dataDir/Users/$user_file_name/$monkey.hdb");
             $mlog->load(\*FL);
             close(FL);
         } else {
@@ -8009,11 +8008,11 @@ EOD
         foreach $md (sort(keys(%mondb))) {
             if ($monchanges{$md} > 0) {
                 $mondb{$md}->{last_modification_time} = time();
-                open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/$md.hdb") ||
-                    die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$md.hdb");
+                open(FL, ">:utf8", "$dataDir/Users/$user_file_name/$md.hdb") ||
+                    die("Cannot open monthly log file $dataDir/Users/$user_file_name/$md.hdb");
                 $mondb{$md}->save(\*FL);
                 close(FL);
-                clusterCopy("/server/pub/hackdiet/Users/$user_file_name/$md.hdb");
+                clusterCopy("$dataDir/Users/$user_file_name/$md.hdb");
             }
         }
     }
@@ -8061,7 +8060,7 @@ Log items imported: $imported.<br />\n");
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -8097,8 +8096,8 @@ Log items imported: $imported.<br />\n");
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -8109,8 +8108,8 @@ Log items imported: $imported.<br />\n");
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -8118,8 +8117,8 @@ Log items imported: $imported.<br />\n");
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -8429,7 +8428,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -8465,8 +8464,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -8477,8 +8476,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -8486,8 +8485,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -8551,11 +8550,11 @@ EOD
 
     my %accounts;
 
-    opendir(CD, "/server/pub/hackdiet/Pubname") ||
-        die("Cannot open directory /server/pub/hackdiet/Pubname");
+    opendir(CD, "$dataDir/Pubname") ||
+        die("Cannot open directory $dataDir/Pubname");
     for my $f (grep(/.*\.hdp$/, readdir(CD))) {
-        open(FU, "<:utf8", "/server/pub/hackdiet/Pubname/$f") ||
-            die("Cannot open user account directory /server/pub/hackdiet/Pubname/$f");
+        open(FU, "<:utf8", "$dataDir/Pubname/$f") ||
+            die("Cannot open user account directory $dataDir/Pubname/$f");
         my $pn = HDiet::pubname->new();
         $pn->load(\*FU);
         close(FU);
@@ -8640,7 +8639,7 @@ EOD
             }
         }
 
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$qun/UserAccount.hdu") ||
+        open(FU, "<:utf8", "$dataDir/Users/$qun/UserAccount.hdu") ||
             next;
         my $ui = HDiet::user->new();
         $ui->load(\*FU);
@@ -8698,7 +8697,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -8734,8 +8733,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -8746,8 +8745,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -8755,8 +8754,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -8897,11 +8896,11 @@ EOD
 
     $session->{effective_name} = '';
     $session->{browse_name} = $pn->{public_name};
-    open(FS, ">:utf8", "/server/pub/hackdiet/Sessions/$session->{session_id}.hds") ||
-        die("Cannot create session file /server/pub/hackdiet/Sessions/$session->{session_id}.hds");
+    open(FS, ">:utf8", "$dataDir/Sessions/$session->{session_id}.hds") ||
+        die("Cannot create session file $dataDir/Sessions/$session->{session_id}.hds");
     $session->save(\*FS);
     close(FS);
-    clusterCopy("/server/pub/hackdiet/Sessions/$session->{session_id}.hds");
+    clusterCopy("$dataDir/Sessions/$session->{session_id}.hds");
     $CGIargs{q} = 'account';
     next;
 
@@ -8913,7 +8912,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -8949,8 +8948,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -8961,8 +8960,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -8970,8 +8969,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -8982,11 +8981,11 @@ EOD
 
     if ($assumed_identity || $browse_public) {
         $session->{effective_name} = $session->{browse_name} = '';
-        open(FS, ">:utf8", "/server/pub/hackdiet/Sessions/$session->{session_id}.hds") ||
-            die("Cannot create session file /server/pub/hackdiet/Sessions/$session->{session_id}.hds");
+        open(FS, ">:utf8", "$dataDir/Sessions/$session->{session_id}.hds") ||
+            die("Cannot create session file $dataDir/Sessions/$session->{session_id}.hds");
         $session->save(\*FS);
         close(FS);
-        clusterCopy("/server/pub/hackdiet/Sessions/$session->{session_id}.hds");
+        clusterCopy("$dataDir/Sessions/$session->{session_id}.hds");
     }
     $CGIargs{q} = 'account';
     next;
@@ -8999,7 +8998,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -9036,8 +9035,8 @@ EOD
 
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -9048,8 +9047,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -9057,8 +9056,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -9188,7 +9187,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -9224,8 +9223,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -9236,8 +9235,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -9245,8 +9244,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -9559,7 +9558,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -9595,8 +9594,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -9607,8 +9606,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -9616,8 +9615,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -9822,7 +9821,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -9859,8 +9858,8 @@ EOD
 
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -9871,8 +9870,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -9880,8 +9879,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -9945,27 +9944,27 @@ EOD
     }
 
 
-    open(FU, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, ">:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     $ui->save(\*FU);
     close(FU);
-    clusterCopy("/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    clusterCopy("$dataDir/Users/$user_file_name/UserAccount.hdu");
 
 
     if ($ui->{badge_trend} != 0) {
 
-    open(FB, ">/server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png") ||
-        die("Cannot update monthly log file /server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png");
+    open(FB, ">$dataDir/Users/$user_file_name/BadgeImageNew.png") ||
+        die("Cannot update monthly log file $dataDir/Users/$user_file_name/BadgeImageNew.png");
     my $hist = HDiet::history->new($ui, $user_file_name);
     $hist->drawBadgeImage(\*FB, $ui->{badge_trend});
     close(FB);
-    do_command("mv /server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png /server/pub/hackdiet/Users/$user_file_name/BadgeImage.png");
-    clusterCopy("/server/pub/hackdiet/Users/$user_file_name/BadgeImage.png");
+    do_command("mv $dataDir/Users/$user_file_name/BadgeImageNew.png $dataDir/Users/$user_file_name/BadgeImage.png");
+    clusterCopy("$dataDir/Users/$user_file_name/BadgeImage.png");
 
     } else {
-        if (-f "/server/pub/hackdiet/Users/$user_file_name/BadgeImage.png") {
-            unlink("/server/pub/hackdiet/Users/$user_file_name/BadgeImage.png");
-            clusterDelete("/server/pub/hackdiet/Users/$user_file_name/BadgeImage.png");
+        if (-f "$dataDir/Users/$user_file_name/BadgeImage.png") {
+            unlink("$dataDir/Users/$user_file_name/BadgeImage.png");
+            clusterDelete("$dataDir/Users/$user_file_name/BadgeImage.png");
         }
     }
 
@@ -10047,7 +10046,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -10084,8 +10083,8 @@ EOD
 
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -10096,8 +10095,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -10105,8 +10104,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -10228,7 +10227,7 @@ write_XHTML_epilogue($fh, $homeBase);
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -10264,8 +10263,8 @@ write_XHTML_epilogue($fh, $homeBase);
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -10276,8 +10275,8 @@ write_XHTML_epilogue($fh, $homeBase);
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -10285,8 +10284,8 @@ write_XHTML_epilogue($fh, $homeBase);
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -10395,7 +10394,7 @@ EOD
     my $spell = 1;          # We may make this optional some day
     my $spellCmd = 'aspell list --encoding=utf-8 --mode=none | sort -u';
     if ($spell && ($spellCmd ne '')) {
-        my $sfn = "/server/pub/hackdiet/Users/$user_file_name/spell$$.tmp";
+        my $sfn = "$dataDir/Users/$user_file_name/spell$$.tmp";
         if (open(SP, "|-:utf8", "$spellCmd >$sfn")) {
             print(SP $subject . "\n");
             print(SP $message . "\n");
@@ -10514,7 +10513,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -10550,8 +10549,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -10562,8 +10561,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -10571,8 +10570,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -10770,7 +10769,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -10806,8 +10805,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -10818,8 +10817,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -10827,8 +10826,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -11015,8 +11014,8 @@ EOD
         $acct_category = 'active';
     }
 
-    opendir(CD, "/server/pub/hackdiet/Users") ||
-        die("Cannot open directory /server/pub/hackdiet/Users");
+    opendir(CD, "$dataDir/Users") ||
+        die("Cannot open directory $dataDir/Users");
     for my $f (grep(!/\.\.?\z/, readdir(CD))) {
 
         if ($acct_category ne 'all') {
@@ -11028,8 +11027,8 @@ EOD
             }
         }
 
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$f/UserAccount.hdu") ||
-            die("Cannot open user account directory /server/pub/hackdiet/Users/$f/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$f/UserAccount.hdu") ||
+            die("Cannot open user account directory $dataDir/Users/$f/UserAccount.hdu");
         my $ui = HDiet::user->new();
         $ui->load(\*FU);
         close(FU);
@@ -11042,8 +11041,8 @@ EOD
     my ($naccts, $npub) = (0, 0);
     for my $n (sort({ lc($a) cmp lc($b)} keys(%accounts))) {
         my $qn = quoteHTML($n);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$accounts{$n}/UserAccount.hdu") ||
-            die("Cannot open user account directory /server/pub/hackdiet/Users/$accounts{$n}/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$accounts{$n}/UserAccount.hdu") ||
+            die("Cannot open user account directory $dataDir/Users/$accounts{$n}/UserAccount.hdu");
         my $ui = HDiet::user->new();
         $ui->load(\*FU);
         close(FU);
@@ -11125,7 +11124,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -11161,8 +11160,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -11173,8 +11172,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -11182,8 +11181,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -11319,7 +11318,7 @@ EOD
 
     $user_file_name = quoteUserName($CGIargs{useracct});
 
-    if (!(-d "/server/pub/hackdiet/Users/$user_file_name")) {
+    if (!(-d "$dataDir/Users/$user_file_name")) {
         write_XHTML_prologue($fh, $homeBase, "Invalid Access Request", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
 
@@ -11382,11 +11381,11 @@ EOD
 
     $session->{effective_name} = $CGIargs{useracct};
     $session->{browse_name} = '';
-    open(FS, ">:utf8", "/server/pub/hackdiet/Sessions/$session->{session_id}.hds") ||
-        die("Cannot create session file /server/pub/hackdiet/Sessions/$session->{session_id}.hds");
+    open(FS, ">:utf8", "$dataDir/Sessions/$session->{session_id}.hds") ||
+        die("Cannot create session file $dataDir/Sessions/$session->{session_id}.hds");
     $session->save(\*FS);
     close(FS);
-    clusterCopy("/server/pub/hackdiet/Sessions/$session->{session_id}.hds");
+    clusterCopy("$dataDir/Sessions/$session->{session_id}.hds");
     $CGIargs{q} = 'account';
     next;
 
@@ -11398,7 +11397,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -11434,8 +11433,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -11446,8 +11445,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -11455,8 +11454,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -11705,7 +11704,7 @@ EOD
     my $aufn = $user_file_name;     # Save administrator's user file name
     $user_file_name = quoteUserName($CGIargs{useracct});
 
-    if (!(-d "/server/pub/hackdiet/Users/$user_file_name")) {
+    if (!(-d "$dataDir/Users/$user_file_name")) {
         print $fh <<"EOD";
 <h3>There is no user account named <b>$qun</b>.</h3>
 
@@ -11720,8 +11719,8 @@ it before the database can be purged.</h3>
 <h4 class="nav"><a href="/cgi-bin/HackDiet?q=acctmgr&amp;s=$session->{session_id}$tzOff">Return to account manager</a></h4>
 EOD
     } else {
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Administrator purge logs: cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Administrator purge logs: cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         my $di = HDiet::user->new();
         $di->load(\*FU);
         close(FU);
@@ -11733,18 +11732,18 @@ EOD
 
     my $tfn = timeXML(time());
     $tfn =~ s/:/./g;            # Avoid idiot tar treating time as hostname
-    if ("/server/pub/hackdiet/Backups" ne '') {
-        do_command("( cd /server/pub/hackdiet/Backups; tar cfj ${user_file_name}_" .
+    if ("$dataDir/Backups" ne '') {
+        do_command("( cd $dataDir/Backups; tar cfj ${user_file_name}_" .
             $tfn . ".bz2 -C ../Users $user_file_name )");
-        clusterCopy("/server/pub/hackdiet/Backups/${user_file_name}_$tfn.bz2");
+        clusterCopy("$dataDir/Backups/${user_file_name}_$tfn.bz2");
     }
 
 
         for my $m (@months) {
-            unlink("/server/pub/hackdiet/Users/$user_file_name/$m.hdb") ||
-               die("Cannot delete log file /server/pub/hackdiet/Users/$user_file_name/$m.hdb");
-            clusterDelete("/server/pub/hackdiet/Users/$user_file_name/$m.hdb");
-#print($fh "<pre>unlink /server/pub/hackdiet/Users/$user_file_name/$m.hdb</pre>\n");
+            unlink("$dataDir/Users/$user_file_name/$m.hdb") ||
+               die("Cannot delete log file $dataDir/Users/$user_file_name/$m.hdb");
+            clusterDelete("$dataDir/Users/$user_file_name/$m.hdb");
+#print($fh "<pre>unlink $dataDir/Users/$user_file_name/$m.hdb</pre>\n");
         }
 
         append_history($user_file_name, 14, $nmonths);
@@ -11769,7 +11768,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -11805,8 +11804,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -11817,8 +11816,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -11826,8 +11825,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -12076,7 +12075,7 @@ EOD
     my $aufn = $user_file_name;     # Save administrator's user file name
     $user_file_name = quoteUserName($CGIargs{useracct});
 
-    if (!(-d "/server/pub/hackdiet/Users/$user_file_name")) {
+    if (!(-d "$dataDir/Users/$user_file_name")) {
         print $fh <<"EOD";
 <h3>There is no user account named <b>$qun</b>.</h3>
 EOD
@@ -12089,8 +12088,8 @@ it before the account can be deleted.</h3>
 <h4 class="nav"><a href="/cgi-bin/HackDiet?q=acctmgr&amp;s=$session->{session_id}$tzOff">Return to account manager</a></h4>
 EOD
     } else {
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Administrator delete account: cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Administrator delete account: cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         my $di = HDiet::user->new();
         $di->load(\*FU);
         close(FU);
@@ -12110,14 +12109,14 @@ EOD
 
     my $tfn = timeXML(time());
     $tfn =~ s/:/./g;            # Avoid idiot tar treating time as hostname
-    if ("/server/pub/hackdiet/Backups" ne '') {
-        do_command("( cd /server/pub/hackdiet/Backups; tar cfj ${user_file_name}_" .
+    if ("$dataDir/Backups" ne '') {
+        do_command("( cd $dataDir/Backups; tar cfj ${user_file_name}_" .
             $tfn . ".bz2 -C ../Users $user_file_name )");
-        clusterCopy("/server/pub/hackdiet/Backups/${user_file_name}_$tfn.bz2");
+        clusterCopy("$dataDir/Backups/${user_file_name}_$tfn.bz2");
     }
 
-            do_command("rm -rf /server/pub/hackdiet/Users/$user_file_name");
-            clusterRecursiveDelete("/server/pub/hackdiet/Users/$user_file_name");
+            do_command("rm -rf $dataDir/Users/$user_file_name");
+            clusterRecursiveDelete("$dataDir/Users/$user_file_name");
 
             print $fh <<"EOD";
 <h1 class="c">Account Deleted</h1>
@@ -12140,7 +12139,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -12176,8 +12175,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -12188,8 +12187,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -12197,8 +12196,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -12320,11 +12319,11 @@ EOD
 
     my %sessions;
 
-    opendir(CD, "/server/pub/hackdiet/Sessions") ||
-        die("Cannot open directory /server/pub/hackdiet/Sessions");
+    opendir(CD, "$dataDir/Sessions") ||
+        die("Cannot open directory $dataDir/Sessions");
     for my $f (grep(/\w+\.hds/, readdir(CD))) {
-        open(FU, "<:utf8", "/server/pub/hackdiet/Sessions/$f") ||
-            die("Cannot open session /server/pub/hackdiet/Sessions/$f");
+        open(FU, "<:utf8", "$dataDir/Sessions/$f") ||
+            die("Cannot open session $dataDir/Sessions/$f");
         my $session = HDiet::session->new();
         $session->load(\*FU);
         close(FU);
@@ -12354,8 +12353,8 @@ EOD
 
 
     for my $f (sort({ lc($a) cmp lc($b)} keys(%sessions))) {
-        open(FU, "<:utf8", "/server/pub/hackdiet/Sessions/$sessions{$f}.hds") ||
-            die("Cannot open session /server/pub/hackdiet/Sessions/$sessions{$f}.hds");
+        open(FU, "<:utf8", "$dataDir/Sessions/$sessions{$f}.hds") ||
+            die("Cannot open session $dataDir/Sessions/$sessions{$f}.hds");
         my $session = HDiet::session->new();
         $session->load(\*FU);
         close(FU);
@@ -12410,7 +12409,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -12446,8 +12445,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -12458,8 +12457,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -12467,8 +12466,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -12590,12 +12589,12 @@ EOD
 
     my %cookies;
 
-    opendir(CD, "/server/pub/hackdiet/RememberMe") ||
-        die("Cannot open directory /server/pub/hackdiet/RememberMe");
+    opendir(CD, "$dataDir/RememberMe") ||
+        die("Cannot open directory $dataDir/RememberMe");
     for my $f (grep(/\w+\.hdr/, readdir(CD))) {
-        open(FU, "<:utf8", "/server/pub/hackdiet/RememberMe/$f") ||
-#        open(FU, "<", "/server/pub/hackdiet/RememberMe/$f") ||                #### Poison cookie search
-            die("Cannot open persistent login /server/pub/hackdiet/RememberMe/$f");
+        open(FU, "<:utf8", "$dataDir/RememberMe/$f") ||
+#        open(FU, "<", "$dataDir/RememberMe/$f") ||                #### Poison cookie search
+            die("Cannot open persistent login $dataDir/RememberMe/$f");
         my $cookie = HDiet::cookie->new();
         $cookie->load(\*FU);
 #if ($cookie->{login_name} =~ m/^[ -~]*$/) { next; }                     #### Poison cookie search
@@ -12672,7 +12671,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -12708,8 +12707,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -12720,8 +12719,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -12729,8 +12728,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -12869,12 +12868,12 @@ EOD
 
     my %cookies;
 
-    opendir(CD, "/server/pub/hackdiet/RememberMe") ||
-        die("Cannot open directory /server/pub/hackdiet/RememberMe");
+    opendir(CD, "$dataDir/RememberMe") ||
+        die("Cannot open directory $dataDir/RememberMe");
     for my $f (grep(/\w+\.hdr/, readdir(CD))) {
-        open(FU, "<:utf8", "/server/pub/hackdiet/RememberMe/$f") ||
-#        open(FU, "<", "/server/pub/hackdiet/RememberMe/$f") ||                #### Poison cookie search
-            die("Cannot open persistent login /server/pub/hackdiet/RememberMe/$f");
+        open(FU, "<:utf8", "$dataDir/RememberMe/$f") ||
+#        open(FU, "<", "$dataDir/RememberMe/$f") ||                #### Poison cookie search
+            die("Cannot open persistent login $dataDir/RememberMe/$f");
         my $cookie = HDiet::cookie->new();
         $cookie->load(\*FU);
 #if ($cookie->{login_name} =~ m/^[ -~]*$/) { next; }                     #### Poison cookie search
@@ -12955,9 +12954,9 @@ EOD
 
         my $qun = quoteUserName($cook->{login_name});
 
-        if (-f "/server/pub/hackdiet/RememberMe/$CGIargs{cookieid}.hdr") {
-            unlink("/server/pub/hackdiet/RememberMe/$CGIargs{cookieid}.hdr");
-            clusterDelete("/server/pub/hackdiet/RememberMe/$CGIargs{cookieid}.hdr");
+        if (-f "$dataDir/RememberMe/$CGIargs{cookieid}.hdr") {
+            unlink("$dataDir/RememberMe/$CGIargs{cookieid}.hdr");
+            clusterDelete("$dataDir/RememberMe/$CGIargs{cookieid}.hdr");
         }
 
         append_history($user_file_name, 17, "$qun,$cook->{cookie_id}");
@@ -12978,7 +12977,7 @@ print(STDERR "Bogus delete cookie request for $CGIargs{cookieid}\n");
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -13014,8 +13013,8 @@ print(STDERR "Bogus delete cookie request for $CGIargs{cookieid}\n");
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -13026,8 +13025,8 @@ print(STDERR "Bogus delete cookie request for $CGIargs{cookieid}\n");
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -13035,8 +13034,8 @@ print(STDERR "Bogus delete cookie request for $CGIargs{cookieid}\n");
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -13532,7 +13531,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -13568,8 +13567,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -13580,8 +13579,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -13589,8 +13588,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -13975,7 +13974,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -14011,8 +14010,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -14023,8 +14022,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -14032,8 +14031,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -14171,7 +14170,7 @@ EOD
 
 
     if (($CGIargs{sessionid} !~ m/^[0-9FGJKQW]{40}$/) ||
-        (!-f "/server/pub/hackdiet/Sessions/$CGIargs{sessionid}.hds")) {
+        (!-f "$dataDir/Sessions/$CGIargs{sessionid}.hds")) {
         write_XHTML_prologue($fh, $homeBase, "No Such Session", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
 
@@ -14235,11 +14234,11 @@ EOD
 
     my %sessions;
 
-    opendir(CD, "/server/pub/hackdiet/Sessions") ||
-        die("Cannot open directory /server/pub/hackdiet/Sessions");
+    opendir(CD, "$dataDir/Sessions") ||
+        die("Cannot open directory $dataDir/Sessions");
     for my $f (grep(/\w+\.hds/, readdir(CD))) {
-        open(FU, "<:utf8", "/server/pub/hackdiet/Sessions/$f") ||
-            die("Cannot open session /server/pub/hackdiet/Sessions/$f");
+        open(FU, "<:utf8", "$dataDir/Sessions/$f") ||
+            die("Cannot open session $dataDir/Sessions/$f");
         my $session = HDiet::session->new();
         $session->load(\*FU);
         close(FU);
@@ -14327,14 +14326,14 @@ EOD
     $user_file_name = quoteUserName($user);
 
 
-    if ((!$readOnly) && (-f "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")
-        && open(FS, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")) {
+    if ((!$readOnly) && (-f "$dataDir/Users/$user_file_name/ActiveSession.hda")
+        && open(FS, "<:utf8", "$dataDir/Users/$user_file_name/ActiveSession.hda")) {
         my $asn = load_active_session(\*FS);
         close(FS);
-        unlink("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
-        clusterDelete("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
-        unlink("/server/pub/hackdiet/Sessions/$asn.hds");
-        clusterDelete("/server/pub/hackdiet/Sessions/$asn.hds");
+        unlink("$dataDir/Users/$user_file_name/ActiveSession.hda");
+        clusterDelete("$dataDir/Users/$user_file_name/ActiveSession.hda");
+        unlink("$dataDir/Sessions/$asn.hds");
+        clusterDelete("$dataDir/Sessions/$asn.hds");
         append_history($user_file_name, 3);
     }
 
@@ -14344,9 +14343,9 @@ EOD
     #   in the Users directory, if the session close above did not
     #   delete the open session file, manually delete it now.
 
-    if (-f "/server/pub/hackdiet/Sessions/$CGIargs{sessionid}.hds") {
-        unlink("/server/pub/hackdiet/Sessions/$CGIargs{sessionid}.hds");
-        clusterDelete("/server/pub/hackdiet/Sessions/$CGIargs{sessionid}.hds");
+    if (-f "$dataDir/Sessions/$CGIargs{sessionid}.hds") {
+        unlink("$dataDir/Sessions/$CGIargs{sessionid}.hds");
+        clusterDelete("$dataDir/Sessions/$CGIargs{sessionid}.hds");
 print(STDERR "Deleting bogus open session $CGIargs{sessionid} for user $user_file_name\n");
     }
 
@@ -14366,7 +14365,7 @@ print(STDERR "Deleting bogus open session $CGIargs{sessionid} for user $user_fil
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -14402,8 +14401,8 @@ print(STDERR "Deleting bogus open session $CGIargs{sessionid} for user $user_fil
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -14414,8 +14413,8 @@ print(STDERR "Deleting bogus open session $CGIargs{sessionid} for user $user_fil
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -14423,8 +14422,8 @@ print(STDERR "Deleting bogus open session $CGIargs{sessionid} for user $user_fil
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -14574,7 +14573,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -14610,8 +14609,8 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -14622,8 +14621,8 @@ EOD
         }
         $user_name = $effective_user_name;
         $user_file_name = quoteUserName($user_name);
-        open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-            die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+        open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+            die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
         $ui->load(\*FU);
         close(FU);
     } elsif ($browse_public) {
@@ -14631,8 +14630,8 @@ EOD
         if (defined($pn->findPublicName($effective_user_name))) {
             $user_name = $pn->{public_name};
             $user_file_name = quoteUserName($pn->{true_name});
-            open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-                die("Cannot open effective user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+            open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+                die("Cannot open effective user account file $dataDir/Users/$user_file_name/UserAccount.hdu");
             $ui->load(\*FU);
             close(FU);
         } else {
@@ -14775,15 +14774,15 @@ EOD
                         "ABCDEFGHIJKLMNPQRSTUVWXYZ" .
                         "abcdefghjkmnopqrstuvwxyz" .
                         "23456789");
-                if (!(-f "/server/pub/hackdiet/Invitations/$pw.hdi")) {
+                if (!(-f "$dataDir/Invitations/$pw.hdi")) {
                     last;
                 }
             }
-            open(FO, ">:utf8", "/server/pub/hackdiet/Invitations/$pw.hdi") ||
-                die("Cannot create invitation file /server/pub/hackdiet/Invitations/$pw.hdi");
+            open(FO, ">:utf8", "$dataDir/Invitations/$pw.hdi") ||
+                die("Cannot create invitation file $dataDir/Invitations/$pw.hdi");
             print(FO time() . "\n");
             close(FO);
-            clusterCopy("/server/pub/hackdiet/Invitations/$pw.hdi");
+            clusterCopy("$dataDir/Invitations/$pw.hdi");
             print($fh quoteHTML($pw), "\n");
         }
 
@@ -14812,7 +14811,7 @@ EOD
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
     }
     my $session = HDiet::session->new();
-    if (!open(FS, "<:utf8", "/server/pub/hackdiet/Sessions/$CGIargs{s}.hds")) {
+    if (!open(FS, "<:utf8", "$dataDir/Sessions/$CGIargs{s}.hds")) {
         %CGIargs = (
             q => "relogin",
         );
@@ -14891,8 +14890,8 @@ EOD
     my $mlog = HDiet::monthlog->new();
 
     my $i = $ifirst;
-    open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
-        die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+    open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$logs[$i].hdb") ||
+        die("Cannot open monthly log file $dataDir/Users/$user_file_name/$logs[$i].hdb");
     $mlog->load(\*FL);
     close(FL);
 
@@ -14919,11 +14918,11 @@ EOD
 
 
     $mlog->{last_modification_time} = time();
-    open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
-        die("Cannot create monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+    open(FL, ">:utf8", "$dataDir/Users/$user_file_name/$logs[$i].hdb") ||
+        die("Cannot create monthly log file $dataDir/Users/$user_file_name/$logs[$i].hdb");
     $mlog->save(\*FL);
     close(FL);
-    clusterCopy("/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+    clusterCopy("$dataDir/Users/$user_file_name/$logs[$i].hdb");
 
     }
 
@@ -14938,8 +14937,8 @@ EOD
 
     $mlog = HDiet::monthlog->new();
 
-    open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
-        die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+    open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$logs[$i].hdb") ||
+        die("Cannot open monthly log file $dataDir/Users/$user_file_name/$logs[$i].hdb");
     $mlog->load(\*FL);
     close(FL);
 
@@ -14983,11 +14982,11 @@ EOD
 
 
     $mlog->{last_modification_time} = time();
-    open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
-        die("Cannot create monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+    open(FL, ">:utf8", "$dataDir/Users/$user_file_name/$logs[$i].hdb") ||
+        die("Cannot create monthly log file $dataDir/Users/$user_file_name/$logs[$i].hdb");
     $mlog->save(\*FL);
     close(FL);
-    clusterCopy("/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+    clusterCopy("$dataDir/Users/$user_file_name/$logs[$i].hdb");
 
 
     $ltrend = $mlog->{trend}[$mlog->monthdays()];
@@ -14996,13 +14995,13 @@ EOD
         }
 
         if ($user->{badge_trend} != 0) {
-            open(FB, ">/server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png") ||
-                die("Cannot update monthly log file /server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png");
+            open(FB, ">$dataDir/Users/$user_file_name/BadgeImageNew.png") ||
+                die("Cannot update monthly log file $dataDir/Users/$user_file_name/BadgeImageNew.png");
             my $hist = HDiet::history->new($user, $user_file_name);
             $hist->drawBadgeImage(\*FB, $user->{badge_trend});
             close(FB);
-            do_command("mv /server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png /server/pub/hackdiet/Users/$user_file_name/BadgeImage.png");
-            clusterCopy("/server/pub/hackdiet/Users/$user_file_name/BadgeImage.png");
+            do_command("mv $dataDir/Users/$user_file_name/BadgeImageNew.png $dataDir/Users/$user_file_name/BadgeImage.png");
+            clusterCopy("$dataDir/Users/$user_file_name/BadgeImage.png");
         }
    }
 
@@ -15014,11 +15013,11 @@ EOD
         if ($extra ne '') {
             $extra = ',' . $extra;
         }
-        open(FH, ">>:utf8", "/server/pub/hackdiet/Users/$user_file/History.hdh") ||
-           die("Cannot append to history file /server/pub/hackdiet/Users/$user_file/History.hdh");
+        open(FH, ">>:utf8", "$dataDir/Users/$user_file/History.hdh") ||
+           die("Cannot append to history file $dataDir/Users/$user_file/History.hdh");
         print(FH "$type," . time() . ",$ENV{REMOTE_ADDR}$extra\n");
         close(FH);
-        clusterCopy("/server/pub/hackdiet/Users/$user_file/History.hdh");
+        clusterCopy("$dataDir/Users/$user_file/History.hdh");
     }
 
 
@@ -15027,21 +15026,21 @@ EOD
 
         #   Update the date and time of the last transaction by this user
         my $now = time();
-        open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file/LastTransaction.hdl") ||
-            die("Cannot update last transaction file /server/pub/hackdiet/Users/$user_file/LastTransaction.hdl");
+        open(FL, ">:utf8", "$dataDir/Users/$user_file/LastTransaction.hdl") ||
+            die("Cannot update last transaction file $dataDir/Users/$user_file/LastTransaction.hdl");
         print FL <<"EOD";
 1
 $now
 EOD
         close(FL);
-        clusterCopy("/server/pub/hackdiet/Users/$user_file/LastTransaction.hdl");
+        clusterCopy("$dataDir/Users/$user_file/LastTransaction.hdl");
    }
 
 
     sub last_transaction_time {
         my ($user_file) = @_;
 
-        if (open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file/LastTransaction.hdl")) {
+        if (open(FL, "<:utf8", "$dataDir/Users/$user_file/LastTransaction.hdl")) {
             my $lt = 0;
             my $s = in(\*FL);
             if ($s == 1) {          # Only proceed if version correct
@@ -15079,16 +15078,16 @@ EOD
         my ($user_name) = @_;
 
         my $user_file_name = quoteUserName($user_name);
-        if ((-f "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")
-            && open(FS, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")) {
+        if ((-f "$dataDir/Users/$user_file_name/ActiveSession.hda")
+            && open(FS, "<:utf8", "$dataDir/Users/$user_file_name/ActiveSession.hda")) {
             my $asn = load_active_session(\*FS);
             close(FS);
-            if (-f "/server/pub/hackdiet/Sessions/$asn.hds") {
+            if (-f "$dataDir/Sessions/$asn.hds") {
                 return 1;
             } else {
-                unlink("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
-                clusterDelete("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
-#print(STDERR "is_user_session_open abstergifying orphaned session /server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda\n");
+                unlink("$dataDir/Users/$user_file_name/ActiveSession.hda");
+                clusterDelete("$dataDir/Users/$user_file_name/ActiveSession.hda");
+#print(STDERR "is_user_session_open abstergifying orphaned session $dataDir/Users/$user_file_name/ActiveSession.hda\n");
             }
         }
         return 0;
