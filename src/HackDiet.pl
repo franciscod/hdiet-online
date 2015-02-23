@@ -87,9 +87,8 @@ This program is in the public domain.
     use Socket qw(inet_aton);
     use Sys::Syslog;
 
-    my cgiBin = "/usr/lib/cgi-bin";
-    my dataDir = "/var/lib/hackdiet";
-
+    my $cgiBin = "/usr/lib/cgi-bin";
+    my $dataDir = "/var/lib/hackdiet";
     use lib "/usr/lib/cgi-bin/HDiet/Cgi";
     use CGI;
 
