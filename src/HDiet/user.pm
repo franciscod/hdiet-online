@@ -1,11 +1,12 @@
 #! /usr/bin/perl
 
-    
+
     require 5;
     use strict;
     use warnings;
     use utf8;
 
+    my $dataDir = "/var/lib/hackdiet";
 
     use HDiet::monthlog qw();
 
@@ -194,7 +195,7 @@ EOD
         $self->{badge_trend} = in($infile, 0);
     }
 
-    
+
     sub in {
         my ($fh, $default) = @_;
         my $s;
@@ -281,7 +282,7 @@ EOD
             $fh = \*STDOUT;
         }
 
-        
+
     my ($login_name, $first_name, $last_name, $middle_name,
         $e_mail) = (
                     quoteHTML($self->{login_name}),
@@ -299,7 +300,7 @@ EOD
 
     my %eunit = (0, '', 1, '');
     $eunit{$self->{energy_unit}} = 'checked="checked"';
-    
+
     my %dchar = ('.', '', ',', '');
     $dchar{$self->{decimal_character}} = 'checked="checked"';
 
@@ -316,7 +317,7 @@ EOD
 <table border="border" class="login">
 
 EOD
-        
+
     if ($edit_mode) {
         my $llg = $login_name;
         if ($self->{administrator}) {
@@ -339,7 +340,7 @@ EOD
 
 
         if (0) {
-            
+
     if (!$edit_mode) {
         print $fh <<"EOD";
 <tr><th><span class="required">*</span> <label for="HDiet_invitation"><span
@@ -470,7 +471,7 @@ EOD
 </tr>
 
 EOD
-        
+
         print $fh <<"EOD";
 <tr><th>Public name:</th>
     <td>
@@ -619,8 +620,8 @@ EOD
         my $user_file_name = quoteUserName($self->{login_name});
         my $selpat = $year ? $year : '\d+';
 
-        opendir(CD, "/server/pub/hackdiet/Users/$user_file_name") ||
-            die("Cannot open directory /server/pub/hackdiet/Users/$user_file_name");
+        opendir(CD, "$dataDir/Users/$user_file_name") ||
+            die("Cannot open directory $dataDir/Users/$user_file_name");
         my @logs;
         my $f;
         foreach $f (sort(grep(/^$selpat\-\d\d\.hdb/, readdir(CD)))) {
@@ -639,8 +640,8 @@ EOD
         my $lyear = '';
         my @years;
 
-        opendir(CD, "/server/pub/hackdiet/Users/$user_file_name") ||
-            die("Cannot open directory /server/pub/hackdiet/Users/$user_file_name");
+        opendir(CD, "$dataDir/Users/$user_file_name") ||
+            die("Cannot open directory $dataDir/Users/$user_file_name");
         my $m;
         foreach $m (sort(grep(/^\d+\-\d\d\.hdb/, readdir(CD)))) {
             $m =~ m/^(\d+)\-/;
@@ -683,11 +684,11 @@ EOD
         }
         my $crc = new HDiet::Digest::Crc32();
         $plain .= sprintf("%08x", $crc->strcrc32($plain));
-        
+
         my $crypto = Crypt::CBC->new(
                 -key => "Super duper top secret!",
                 -cipher => "Crypt::OpenSSL::AES"
-                                    );             
+                                    );
         my $encrypted = $crypto->encrypt($plain);
         my $ecrc = sprintf("%08x", $crc->strcrc32($encrypted));
         my $huid = unpack("H*", $encrypted);

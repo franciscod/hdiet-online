@@ -1,20 +1,21 @@
 #! /usr/bin/perl
 
-    
+
     require 5;
     use strict;
     use warnings;
     use utf8;
 
-    
+    my $dataDir = "/var/lib/hackdiet";
+
     use File::Temp qw(tempfile);
     use Digest::SHA1  qw(sha1_hex);
-    
+
     use constant FILE_VERSION => 1;
-    
+
     binmode(STDOUT, ":utf8");
-    
-    
+
+
     if (($> == 0) && (($) + 0) == 0)) {
         if ("apache" ne '') {
             my $gid = getgrnam("apache");
@@ -30,7 +31,7 @@
     }
 #else { print("Not started as root.\n"); }
 
-    
+
     my @clusterHosts = qw (server0.fourmilab.ch server1.fourmilab.ch server2.fourmilab.ch);
     my %failed_hosts;
     my %failed_transactions;
@@ -44,20 +45,20 @@
             close(LOG) if $logging;
             exit(0);
         };
-                    
+
     my $verbose = 0;
     my $nosync = 0;
-    
+
     $| = 0 if $verbose;
-    
-    
+
+
     open(PIDF, ">/server/run/ClusterSync/ClusterSync.pid") ||
         die("Cannot create /server/run/ClusterSync/ClusterSync.pid");
     print(PIDF "$$\n");
     close(PIDF);
 
-    
-    
+
+
     if ("/server/log/hackdiet/ClusterSync.log" ne '') {
         open(LOG, ">>/server/log/hackdiet/ClusterSync.log") ||
             die("ClusterSync: Unable to open log file /server/log/hackdiet/ClusterSync.log");
@@ -69,10 +70,10 @@
             };
     }
 
-    
+
     while (1) {
         my $transfound = 0;
-        
+
     if ($cycleLog) {
         close(LOG);
         open(LOG, ">>/server/log/hackdiet/ClusterSync.log") ||
@@ -82,8 +83,8 @@
         print("ClusterSync: Log file cycled.\n") if $verbose;
     }
 
-        
-    if (-d "/server/pub/hackdiet/ClusterSync") {
+
+    if (-d "$dataDir/ClusterSync") {
         for (my $i = 0; $i <= $#clusterHosts; $i++) {
             my $destHost = $clusterHosts[$i];
             if (defined $failed_hosts{$destHost}) {
@@ -93,19 +94,19 @@
                 }
             }
 
-            if ((-d "/server/pub/hackdiet/ClusterSync/$destHost") &&
+            if ((-d "$dataDir/ClusterSync/$destHost") &&
                 (!defined($failed_hosts{$destHost}))) {
-                if (opendir(DI, "/server/pub/hackdiet/ClusterSync/$destHost")) {
+                if (opendir(DI, "$dataDir/ClusterSync/$destHost")) {
                     my @transactions = sort(grep(/\.hdc$/, readdir(DI)));
-                    
+
                     for my $t (@transactions) {
                         $t = untaint($t);
                         if (defined($failed_hosts{$destHost})) {
                             last;
                         }
-                        my $transfile = "/server/pub/hackdiet/ClusterSync/$destHost/$t";
+                        my $transfile = "$dataDir/ClusterSync/$destHost/$t";
                         if (defined($failed_transactions{$t})) {
-                            
+
     my ($nfails, $failtime) = ($failed_transactions{$t}[0], $failed_transactions{$t}[1]);
     if ($failtime > time()) {
 #logmsg("** Transaction $t: retry time has not arrived after try $nfails.");
@@ -114,7 +115,7 @@
 
                         }
                         eval {
-                            
+
     open(FI, "<:utf8", $transfile) ||
         die("ClusterSync: Unable to open $transfile");
     my $file_version = in(\*FI);
@@ -139,13 +140,13 @@
         "Sodium Chloride") ne $signature) {
         die("ClusterSync: Invalid signature in transaction");
     }
-    if ($filename !~ m:^/server/pub/hackdiet:) {
+    if ($filename !~ m:^$dataDir:) {
         die("ClusterSync: Bogus file name ($filename) in transaction");
     }
     if (($filename =~ m/[;<>|#\$\*\?]/) || ($filename =~ m/\.\./)) {
         die("ClusterSync: Abusive character in file name ($filename) in transaction");
     }
-    
+
     my $res;
     if ($transaction eq 'copy') {
         $res = syncCommand("scp -q -p '$filename' '$destHost:$filename'",
@@ -169,7 +170,7 @@
 
                         };
                         if ($@) {
-                            
+
     my $whyFailed = $@;
     $whyFailed =~ s/\s+$//;
     if (!defined($failed_transactions{$t})) {
@@ -221,8 +222,8 @@
             select(undef, undef, undef, 30);
         }
     }
-    
-    
+
+
     sub in {
         my ($fh, $default) = @_;
         my $s;
@@ -241,16 +242,16 @@
 
     sub syncCommand {
         my ($cmd, $host, $tfile) = @_;
-        
+
         logmsg("    Command: $cmd");
-        
+
         if (!$nosync) {
             my $tfh = new File::Temp(TEMPLATE => '/tmp/HDClusterXXXXXXXXXXXX',
                                UNLINK => 1,
                                SUFFIX => '.hdc');
             $cmd = untaint($cmd);
             my $status = system($cmd . ">$tfh 2>&1");
-            
+
             my @results;
             my $jres;
             if ($status != 0) {
@@ -258,8 +259,8 @@
                 @results = <$tfh>;
                 close($tfh);
                 my $jres = join("", @results);
-                
-                
+
+
     if ($jres =~ m/rm: cannot remove\s.*No such file or directory/) {
         logmsg("        Deeming delete of nonexistent file successful.");
         $status = 0;
@@ -281,7 +282,7 @@
     }
 
             }
-            
+
             if ($status == 0) {
                 logmsg("        Executed OK.");
                 unlink($tfile) ||
@@ -291,7 +292,7 @@
 
             } else {
                 logmsg("        ***Sync command failed, status $status: $cmd");
-                
+
                 if ($jres =~ m/(Connection timed out|Connection refused|lost connection)/) {
                     $failed_hosts{$host} = time() + 45;
                     logmsg("Marking host $host failed until " .
@@ -305,10 +306,10 @@
 
     sub logmsg {
         my ($msg) = @_;
-        
+
         print("$msg\n") if $verbose;
         print(LOG "$msg\n") if $logging;
-        
+
     }
 
     sub untaint {

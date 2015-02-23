@@ -1,11 +1,12 @@
 #! /usr/bin/perl
 
-    
+
     require 5;
     use strict;
     use warnings;
     use utf8;
 
+    my $dataDir = "/var/lib/hackdiet";
 
     use HDiet::monthlog qw(:units);
     use HDiet::trendfit;
@@ -21,7 +22,7 @@
     use constant MIN_VALUE => -1E100;
     use constant MAX_VALUE => 1E100;
 
-    
+
     #   Return least of arguments
     sub min {
         my $v = 1e308;
@@ -154,7 +155,7 @@
 
         my ($start_date, $end_date) = ('9999-99-99', '0000-00-00');
 
-        
+
     my @interval;
     for (my $i = 0; $i <= $#intervals; $i += 2) {
         die("history::analyseTrend: Interval[$i] ($intervals[$i] - $intervals[$i + 1]) out of order")
@@ -172,7 +173,7 @@
     }
 
 
-        
+
     $start_date =~ m/^(\d+)(?:\-(\d+))?(?:\-(\d+))?$/ || die("history::drawChart: invalid start date $start_date");
     my ($start_y, $start_m, $start_d) = ($1, $2, $3);
     $start_m = 1 if !defined($start_m);
@@ -192,14 +193,14 @@
 
 #print("Inclusive interval: $start_date - $end_date  $start_jd - $end_jd  $dayspan days\n");
 
-        
+
     my ($cur_y, $cur_m) = ($start_y, $start_m);
 
     for (my $monkey = sprintf("%04d-%02d", $start_y, $start_m); $monkey le sprintf("%04d-%02d", $end_y, $end_m); $monkey = sprintf("%04d-%02d", $cur_y, $cur_m)) {
         if (!$logs{$monkey}) {
-            if (-f "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") {
-                open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") ||
-                    die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$monkey.hdb");
+            if (-f "$dataDir/Users/$user_file_name/$monkey.hdb") {
+                open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$monkey.hdb") ||
+                    die("Cannot open monthly log file $dataDir/Users/$user_file_name/$monkey.hdb");
                 my $mlog = HDiet::monthlog->new();
                 $logs{$monkey} = $mlog;
                 $mlog->load(\*FL);
@@ -223,7 +224,7 @@
         $lastFitDay = 0;
         ($nDays, $tFlags) = (0, 0);
 
-        
+
     my $lastTrend = 0;
 
     for (my $cdate = $start_jd; $cdate <= $end_jd; $cdate++) {
@@ -271,7 +272,7 @@
         $lastFitDay = 0;
         ($nDays, $tFlags) = (0, 0);
 
-        
+
     $start_date =~ m/^(\d+)(?:\-(\d+))?(?:\-(\d+))?$/ || die("history::drawChart: invalid start date $start_date");
     my ($start_y, $start_m, $start_d) = ($1, $2, $3);
     $start_m = 1 if !defined($start_m);
@@ -289,7 +290,7 @@
 
     my $dayspan = (($end_jd + 1) - $start_jd);
 
-        
+
     my ($cur_y, $cur_m) = ($start_y, $start_m);
     my ($first_day, $last_day) = ($start_d, 31);
     my ($weight_min, $weight_max, $trend_min, $trend_max, $rung_min, $rung_max) =
@@ -299,9 +300,9 @@
     for (my $monkey = sprintf("%04d-%02d", $start_y, $start_m);
          $monkey le sprintf("%04d-%02d", $end_y, $end_m);
          $monkey = sprintf("%04d-%02d", $cur_y, $cur_m)) {
-        if (-f "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") {
-            open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") ||
-                die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$monkey.hdb");
+        if (-f "$dataDir/Users/$user_file_name/$monkey.hdb") {
+            open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$monkey.hdb") ||
+                die("Cannot open monthly log file $dataDir/Users/$user_file_name/$monkey.hdb");
             my $mlog = HDiet::monthlog->new();
             $logs{$monkey} = $mlog;
             $mlog->load(\*FL);
@@ -343,7 +344,7 @@
 
     ($wgt_min, $wgt_max) = (min($weight_min, $trend_min), max($weight_max, $trend_max));
 
-        
+
     my ($pjdstart, $pjdend) = (max($start_jd, $$dietcalc[0]), min($end_jd, $$dietcalc[2]));
     my ($plan_start_day, $plan_start_weight,
         $plan_end_day, $plan_end_weight) = (-1) x 4;
@@ -374,7 +375,7 @@
         }
     }
 
-        
+
     $width = 640 if !defined($width);
     $height = 480 if !defined($height);
 
@@ -395,7 +396,7 @@
 
 
         $img = new GD::Image($width, $height);
-        
+
     #   First colour allocated is background
     my $white =  $img->colorAllocate(255, 255, 255);
     my $grey = ($printFriendly || $monochrome) ?
@@ -416,13 +417,13 @@
                               $leftMargin + $xAxisLength + $axisOffset,
                               $topMargin + $height - ($topMargin + $bottomMargin) + ($axisOffset - 1), $grey);
 
-        
+
     #   Y axis
     PlotLine(-$axisOffset, -$axisOffset, -$axisOffset, $height - ($topMargin + $bottomMargin), $black);
 
     #   X axis
     PlotLine(-$axisOffset, -$axisOffset, $xAxisLength + $axisOffset, -$axisOffset, $black);
-    
+
     my @ext;
 
     my $font = 'Times';
@@ -447,7 +448,7 @@
     my $cjd = gregorian_to_jd($dt_y, $dt_m, $dt_d);
 
     if ($flblinc < 3) {
-        
+
    while ($cjd <= $end_jd) {
         my $yearStart = $dt_m == 1;
         my $monster;
@@ -493,7 +494,7 @@
     }
 
      } else {
-        
+
     @ext =  GD::Image->stringFT($black, $fontFile, 12, 0, 20, 20, "2999 ");
     $cw = $ext[2] - $ext[0];
     $lblinc = int(((int(($end_jd - $start_jd) / 365) * $cw) + ($xAxisLength - 1)) / $xAxisLength);
@@ -530,7 +531,7 @@
 
 
 
-        
+
      if ($wgt_min == $wgt_max) {
             $wgt_min -= 10;
             $wgt_max += 10;
@@ -564,9 +565,9 @@
     $wgt_min = $wgt_min / 100;
 
 
-        
+
     if ($wgt_max > 0) {
-        
+
     for (my $plotw = $wgt_min; $plotw <= $wgt_max; $plotw += $vunit) {
 
         my $ws = HDiet::monthlog::editWeight($plotw, $ui->{display_unit}, $ui->{decimal_character});
@@ -579,7 +580,7 @@
         my $lrung = 0;
         my $nFlagged = 0;
         if ($pixelsPerDay > 1) {
-            
+
     my ($pix, $opix);
     my ($lrg, $ltrend);
     my ($ow, $owy) = (0, 0);
@@ -594,7 +595,7 @@
         #   Plot weight
         if ($weight > 0) {
             if ($pixelsPerDay > int($sinkerSize * 1.5)) {
-                
+
         my $ty = WeightToY($trend);
         my $wy = WeightToY($weight);
         my $offset = $wy - $ty;
@@ -662,7 +663,7 @@
     }
 
         } else {
-            
+
     my $w;
     my $ot = 0;
     my $t;
@@ -709,7 +710,7 @@
 
         }
 
-        
+
     if ($lrung) {
         #   Rung axis
         PlotLine($xAxisLength + $axisOffset, -$axisOffset, $xAxisLength + $axisOffset, $height - ($topMargin + $bottomMargin), $black);
@@ -734,7 +735,7 @@
     }
 
 
-        
+
     my (@intervals, @slopes);
     push(@intervals, sprintf("%04d-%02d-%02d", $start_y, $start_m, $start_d),
                       sprintf("%04d-%02d-%02d", $end_y, $end_m, $end_d));
@@ -783,7 +784,7 @@
             int($width / 2), $height - 4, 'c', 'b', $black);
     }
 
-        
+
     my $title = sprintf("%04d-%02d-%02d &#8211; %04d-%02d-%02d",
         $start_y, $start_m, $start_d, $end_y, $end_m, $end_d);
     main::drawText($img, $title, 'Times', 12, 0,
@@ -795,7 +796,7 @@
     }
 
 
-        
+
     if ($plan_start_day > 0) {
         my $sx = int(($xAxisLength * ($plan_start_day - $start_jd)) / ($end_jd - $start_jd));
         my $sy = WeightToY($plan_start_weight);
@@ -811,7 +812,7 @@
     }
 
 
-        
+
     %logs = ();
     @years = ();
 
@@ -858,7 +859,7 @@
         my ($printFriendly, $monochrome) = (0, 0);
         $img = GD::Image->newFromPng("/server/bin/httpd/cgi-bin/HDiet/Images/badgeback.png", 1);
         die("Cannot load image template /server/bin/httpd/cgi-bin/HDiet/Images/badgeback.png") if !$img;
-        
+
     #   First colour allocated is background
     my $white =  $img->colorAllocate(255, 255, 255);
     my $grey = ($printFriendly || $monochrome) ?
@@ -879,12 +880,12 @@
         my $l_jd = gregorian_to_jd($ly, $lm, $ld);
         my ($s_y, $s_m, $s_d) = $self->firstDay();
         my $s_jd = gregorian_to_jd($s_y, $s_m, $s_d);
-        
+
         my ($cx, $cy) = (132, 3);
-        
+
         if (defined($lw)) {
-        
-            my (@intervals, @slopes, $tslope, $deltaW, $deltaE);       
+
+            my (@intervals, @slopes, $tslope, $deltaW, $deltaE);
 
             if (($l_jd - $s_jd) > 1) {
                 my ($f_y, $f_m, $f_d) = $self->firstDayOfInterval($ly, $lm, $ld, $trendDays);
@@ -902,7 +903,7 @@
 
             main::drawText($img, sprintf("%04d-%02d-%02d", $ly, $lm, $ld),
                 'DejaVuLGCSans-Bold', 10, 0, $cx, $cy, 'c', 't', $black);
-                $cy += 13; 
+                $cy += 13;
 
             my $ws = HDiet::monthlog::editWeight($lw *
                 HDiet::monthlog::WEIGHT_CONVERSION->[$ldu][$ui->{display_unit}],
@@ -929,7 +930,7 @@
                 #   Energy balance
                 main::drawText($img,
                     (($tslope <= 0) ? 'Deficit' : 'Excess') . " $deltaE $eu/day",
-                    'DejaVuLGCSans', 10, 0, $cx, $cy, 'c', 't', 
+                    'DejaVuLGCSans', 10, 0, $cx, $cy, 'c', 't',
                     (($tslope <= 0) ? $dkgreen : $red));
                 $cy += 14;
 
@@ -969,7 +970,7 @@
 
         my ($ui, $user_file_name) = ($self->{user}, $self->{user_file_name});
 
-        
+
     $start_date =~ m/^(\d+)(?:\-(\d+))?(?:\-(\d+))?$/ || die("history::drawChart: invalid start date $start_date");
     my ($start_y, $start_m, $start_d) = ($1, $2, $3);
     $start_m = 1 if !defined($start_m);
@@ -987,14 +988,14 @@
 
     my $dayspan = (($end_jd + 1) - $start_jd);
 
-        
+
     my ($cur_y, $cur_m) = ($start_y, $start_m);
 
     for (my $monkey = sprintf("%04d-%02d", $start_y, $start_m); $monkey le sprintf("%04d-%02d", $end_y, $end_m); $monkey = sprintf("%04d-%02d", $cur_y, $cur_m)) {
         if (!$logs{$monkey}) {
-            if (-f "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") {
-                open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") ||
-                    die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$monkey.hdb");
+            if (-f "$dataDir/Users/$user_file_name/$monkey.hdb") {
+                open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$monkey.hdb") ||
+                    die("Cannot open monthly log file $dataDir/Users/$user_file_name/$monkey.hdb");
                 my $mlog = HDiet::monthlog->new();
                 $logs{$monkey} = $mlog;
                 $mlog->load(\*FL);
@@ -1011,7 +1012,7 @@
                 my ($cd_y, $cd_m, $cd_d) = jd_to_gregorian($j);
                 my $v = $start_value + ($end_value - $start_value) * (($j - $start_jd) / ($end_jd - $start_jd));
 
-                
+
     for (my $n = 0; $n <= $#_; $n++) {
 
         #   'uniform', <range>
@@ -1049,7 +1050,7 @@
 #print("    $j  $v<br />\n");
                 my $monkey = sprintf("%04d-%02d", $cd_y, $cd_m);
                 if (!defined($logs{$monkey})) {
-                    
+
     my $mlog = HDiet::monthlog->new();
     $logs{$monkey} = $mlog;
     $mlog->{login_name} = $ui->{login_name};
@@ -1068,25 +1069,25 @@
             }
         }
 
-        
+
     for my $k (keys(%logs)) {
         my $mlog = $logs{$k};
         $mlog->{last_modification_time} = time();
-        open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/$k.hdb") ||
-            die("Cannot update monthly log file /server/pub/hackdiet/Users/$user_file_name/$k.hdb");
+        open(FL, ">:utf8", "$dataDir/Users/$user_file_name/$k.hdb") ||
+            die("Cannot update monthly log file $dataDir/Users/$user_file_name/$k.hdb");
         $mlog->save(\*FL);
         close(FL);
-        clusterCopy("/server/pub/hackdiet/Users/$user_file_name/$k.hdb");
+        clusterCopy("$dataDir/Users/$user_file_name/$k.hdb");
     }
-    
+
     if (scalar(keys(%logs)) > 0) {
         if ($self->{user}->{badge_trend} != 0) {
-            open(FB, ">/server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png") ||
-                die("Cannot update monthly log file /server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png");
+            open(FB, ">$dataDir/Users/$user_file_name/BadgeImageNew.png") ||
+                die("Cannot update monthly log file $dataDir/Users/$user_file_name/BadgeImageNew.png");
             $self->drawBadgeImage(\*FB, $self->{user}->{badge_trend});
             close(FB);
-            ::do_command("mv /server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png /server/pub/hackdiet/Users/$user_file_name/BadgeImage.png");
-            clusterCopy("/server/pub/hackdiet/Users/$user_file_name/BadgeImage.png");
+            ::do_command("mv $dataDir/Users/$user_file_name/BadgeImageNew.png $dataDir/Users/$user_file_name/BadgeImage.png");
+            clusterCopy("$dataDir/Users/$user_file_name/BadgeImage.png");
         }
     }
 
@@ -1104,7 +1105,7 @@ print("</pre>\n");
     sub lastDay {
         my $self = shift;
 
-        
+
     if ($#years < 0) {
         @years = $self->{user}->enumerateYears();
     }
@@ -1113,10 +1114,10 @@ print("</pre>\n");
         for (my $y = $#years; $y >= 0; $y--) {
             my @months = $self->{user}->enumerateMonths($years[$y]);
             for (my $m = $#months; $m >= 0; $m--) {
-                
+
     if (!$logs{$months[$m]}) {
-        open(FL, "<:utf8", "/server/pub/hackdiet/Users/$self->{user_file_name}/$months[$m].hdb") ||
-            die("Cannot open monthly log file /server/pub/hackdiet/Users/$self->{user_file_name}/$months[$m].hdb");
+        open(FL, "<:utf8", "$dataDir/Users/$self->{user_file_name}/$months[$m].hdb") ||
+            die("Cannot open monthly log file $dataDir/Users/$self->{user_file_name}/$months[$m].hdb");
         my $mlog = HDiet::monthlog->new();
         $logs{$months[$m]} = $mlog;
         $mlog->load(\*FL);
@@ -1139,7 +1140,7 @@ print("</pre>\n");
     sub firstDay {
         my $self = shift;
 
-        
+
     if ($#years < 0) {
         @years = $self->{user}->enumerateYears();
     }
@@ -1148,10 +1149,10 @@ print("</pre>\n");
         for (my $y = 0; $y <= $#years; $y++) {
             my @months = $self->{user}->enumerateMonths($years[$y]);
             for (my $m = 0; $m <= $#months; $m++) {
-                
+
     if (!$logs{$months[$m]}) {
-        open(FL, "<:utf8", "/server/pub/hackdiet/Users/$self->{user_file_name}/$months[$m].hdb") ||
-            die("Cannot open monthly log file /server/pub/hackdiet/Users/$self->{user_file_name}/$months[$m].hdb");
+        open(FL, "<:utf8", "$dataDir/Users/$self->{user_file_name}/$months[$m].hdb") ||
+            die("Cannot open monthly log file $dataDir/Users/$self->{user_file_name}/$months[$m].hdb");
         my $mlog = HDiet::monthlog->new();
         $logs{$months[$m]} = $mlog;
         $mlog->load(\*FL);

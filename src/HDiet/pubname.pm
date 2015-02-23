@@ -1,16 +1,17 @@
 #! /usr/bin/perl
 
-    
+
     require 5;
     use strict;
     use warnings;
     use utf8;
 
+    my $dataDir = "/var/lib/hackdiet";
 
     package HDiet::pubname;
 
     use Fcntl;
-    
+
     use HDiet::Cluster;
 
     require Exporter;
@@ -45,7 +46,7 @@
         my $name = '';
 
         for (my $i = 0; $i <= $#nameSources; $i++) {
-            my $filename = "/server/pub/hackdiet/Pubname/$nameSources[$i]";
+            my $filename = "$dataDir/Pubname/$nameSources[$i]";
             open(NF, "<:utf8", $filename) ||
                 die("pubname::generateUniqueName:  Cannot open $filename");
             my $s;
@@ -88,7 +89,7 @@
         while (1) {
             $name = $self->generateRandomName();
             my $ufn = HDiet::user::quoteUserName($name);
-            if (!(-f "/server/pub/hackdiet/Pubname/$ufn.hdp")) {
+            if (!(-f "$dataDir/Pubname/$ufn.hdp")) {
                 last;
             }
         }
@@ -102,12 +103,12 @@
         my ($ui) = @_;
 
         if ($ui->{public}) {
-            
+
     my $pfn = HDiet::user::quoteUserName($ui->{public_name});
-    if (!unlink("/server/pub/hackdiet/Pubname/$pfn.hdp")) {
-        die("Unable to delete old public name: /server/pub/hackdiet/Pubname/$pfn.hdp");
+    if (!unlink("$dataDir/Pubname/$pfn.hdp")) {
+        die("Unable to delete old public name: $dataDir/Pubname/$pfn.hdp");
     }
-    clusterDelete("/server/pub/hackdiet/Pubname/$pfn.hdp");
+    clusterDelete("$dataDir/Pubname/$pfn.hdp");
     $ui->{public_name} = '';
 
         }
@@ -116,7 +117,7 @@
         while (1) {
             $name = $self->generateRandomName();
             $pfn = HDiet::user::quoteUserName($name);
-            if (sysopen(PF, "/server/pub/hackdiet/Pubname/$pfn.hdp", O_CREAT | O_EXCL | O_WRONLY)) {
+            if (sysopen(PF, "$dataDir/Pubname/$pfn.hdp", O_CREAT | O_EXCL | O_WRONLY)) {
                 binmode(PF, ":utf8");
                 last;
             }
@@ -134,7 +135,7 @@
 
         $self->save(\*PF);
         close(PF);
-        clusterCopy("/server/pub/hackdiet/Pubname/$pfn.hdp");
+        clusterCopy("$dataDir/Pubname/$pfn.hdp");
 
         return $name;
     }
@@ -149,7 +150,7 @@
         $self->{true_create_time} = $self->{public_create_time} = 0;
 
         my $pfn = HDiet::user::quoteUserName($pname);
-        if (open(PF, "<:utf8", "/server/pub/hackdiet/Pubname/$pfn.hdp")) {
+        if (open(PF, "<:utf8", "$dataDir/Pubname/$pfn.hdp")) {
             $self->load(\*PF);
             close(PF);
             return $self->{true_name};
@@ -164,12 +165,12 @@
         my ($ui) = @_;
 
         if ($ui->{public}) {
-            
+
     my $pfn = HDiet::user::quoteUserName($ui->{public_name});
-    if (!unlink("/server/pub/hackdiet/Pubname/$pfn.hdp")) {
-        die("Unable to delete old public name: /server/pub/hackdiet/Pubname/$pfn.hdp");
+    if (!unlink("$dataDir/Pubname/$pfn.hdp")) {
+        die("Unable to delete old public name: $dataDir/Pubname/$pfn.hdp");
     }
-    clusterDelete("/server/pub/hackdiet/Pubname/$pfn.hdp");
+    clusterDelete("$dataDir/Pubname/$pfn.hdp");
     $ui->{public_name} = '';
 
             $ui->{public} = 0;
@@ -222,7 +223,7 @@ EOD
         $self->{public_create_time} = in($infile);
     }
 
-    
+
     sub in {
         my ($fh, $default) = @_;
         my $s;
@@ -237,4 +238,3 @@ EOD
         }
         return $s;
     }
-

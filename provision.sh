@@ -8,6 +8,12 @@ sudo cpanm XML::LibXML
 sudo cpanm Crypt::OpenSSL::AES
 sudo cpanm Crypt::CBC
 
+
+DATADIR="/var/lib/hackdiet"
+
+sudo mkdir -p $(DATADIR)/{Users,Sessions}
+sudo chown -R www-data:www-data $(DATADIR)
+
 cd /vagrant/src
 
 sudo make publish

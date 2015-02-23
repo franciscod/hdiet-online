@@ -1,12 +1,13 @@
 #! /usr/bin/perl
 
-    
-    
+
+
     require 5;
     use strict;
     use warnings;
     use utf8;
 
+    my $dataDir = "/var/lib/hackdiet";
 
     use Time::Local;
     use Encode qw(decode_utf8);
@@ -37,11 +38,11 @@
     use HDiet::Util::IDNA::Punycode;
     use HDiet::Text::CSV;
 
-    
 
 
 
-    
+
+
     #   Processing arguments and options
 
     my $verbose = 0;            # Verbose output for debugging
@@ -61,7 +62,7 @@
 
     my @chartSizes = ( '320x240', '480x360', '512x384', '640x480', '800x600', '1024x768', '1200x900', '1600x1200' );
 
-    my @feedback_categories = ( 
+    my @feedback_categories = (
     '(Not specified)',
     'Problem report',
     'Recommendation for change',
@@ -77,20 +78,20 @@
 
     binmode(STDOUT, ":utf8");
     binmode(STDIN, ":utf8");
-    
+
 use Data::Dumper;
 
-    
+
     my $user_file_name = quoteUserName('John Walker');
-    if (!(-f "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu")
-        || (!open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu"))) {
-        die("Cannot open /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    if (!(-f "$dataDir/Users/$user_file_name/UserAccount.hdu")
+        || (!open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu"))) {
+        die("Cannot open $dataDir/Users/$user_file_name/UserAccount.hdu");
     }
 
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
-    
+
 #    $ui->describe();
 
     my $uec = $ui->generateEncryptedUserID();
@@ -103,46 +104,46 @@ use Data::Dumper;
     open(BF, ">/tmp/steenk.png") || die("Cannot create /tmp/steenk.png");
     $hist->drawBadgeImage(\*BF, 14);
     close(BF);
-    
+
     exit(0);
-    
-    
+
+
     sub decodeEncryptedUserID {
         my ($crypt) = @_;
 
         $crypt =~ tr/FGJKQW/a-f/;
         my $cryptoSig = substr($crypt, 17, 8, "");
         $crypt = pack("H*", $crypt);
-        
-        my $crc = new HDiet::Digest::Crc32();        
+
+        my $crc = new HDiet::Digest::Crc32();
         my $outerSig = sprintf("%08x", $crc->strcrc32($crypt));
-        
+
         if ($cryptoSig ne $outerSig) {
 print(STDERR "user::decodeEncryptedUserID: Outer CRC bad: $cryptoSig $outerSig\n");
             return undef;
         }
-        
+
         my $crypto = Crypt::CBC->new(
                 -key => "Super duper top secret!",
                 -cipher => "Crypt::OpenSSL::AES"
-                                    );             
+                                    );
 
         my $decrypted = $crypto->decrypt($crypt);
 
         my $rcrc = substr($decrypted, -8, 8, "");
         my $icrc = sprintf("%08x", $crc->strcrc32($decrypted));
-        
-        if ($rcrc ne $icrc) { 
+
+        if ($rcrc ne $icrc) {
 print(STDERR "user::decodeEncryptedUserID: Inner CRC bad:  RCRC = $rcrc  ICRC = $icrc\n");
             return undef;
         }
-        
+
         return substr($decrypted, 13, -11);
      }
 
-        
-    
-    
+
+
+
     sub propagate_trend {
         my ($user, $first, $canon) = @_;
 
@@ -151,7 +152,7 @@ print(STDERR "user::decodeEncryptedUserID: Inner CRC bad:  RCRC = $rcrc  ICRC = 
 
         my @logs = $user->enumerateMonths();
         my $user_file_name = quoteUserName($user->{login_name});
-        
+
     my $ifirst;
 
     for ($ifirst = 0; $ifirst <= $#logs; $ifirst++) {
@@ -160,17 +161,17 @@ print(STDERR "user::decodeEncryptedUserID: Inner CRC bad:  RCRC = $rcrc  ICRC = 
         }
     }
 
-        
+
     my $mlog = HDiet::monthlog->new();
 
     my $i = $ifirst;
-    open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
-        die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+    open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$logs[$i].hdb") ||
+        die("Cannot open monthly log file $dataDir/Users/$user_file_name/$logs[$i].hdb");
     $mlog->load(\*FL);
     close(FL);
 
     if ($canon) {
-        
+
     if ($canon) {
         my $ncanon = 0;
 
@@ -190,13 +191,13 @@ print(STDERR "user::decodeEncryptedUserID: Inner CRC bad:  RCRC = $rcrc  ICRC = 
         }
     }
 
-        
+
     $mlog->{last_modification_time} = time();
-    open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
-        die("Cannot create monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+    open(FL, ">:utf8", "$dataDir/Users/$user_file_name/$logs[$i].hdb") ||
+        die("Cannot create monthly log file $dataDir/Users/$user_file_name/$logs[$i].hdb");
     $mlog->save(\*FL);
     close(FL);
-    clusterCopy("/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+    clusterCopy("$dataDir/Users/$user_file_name/$logs[$i].hdb");
 
     }
 
@@ -208,15 +209,15 @@ print(STDERR "user::decodeEncryptedUserID: Inner CRC bad:  RCRC = $rcrc  ICRC = 
 
 
         for ($i = $ifirst + 1; $i <= $#logs; $i++) {
-            
+
     $mlog = HDiet::monthlog->new();
 
-    open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
-        die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+    open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$logs[$i].hdb") ||
+        die("Cannot open monthly log file $dataDir/Users/$user_file_name/$logs[$i].hdb");
     $mlog->load(\*FL);
     close(FL);
 
-    
+
     if ($lunit != $mlog->{log_unit}) {
         $ltrend *= WEIGHT_CONVERSION->[$lunit][$mlog->{log_unit}];
 #print("Log: $logs[$i]  Converted trend unit from $lunit to $mlog->{log_unit}<br>\n");
@@ -229,7 +230,7 @@ print(STDERR "user::decodeEncryptedUserID: Inner CRC bad:  RCRC = $rcrc  ICRC = 
     $ltrend =~ s/(\.[^0]*)0+$/$1/;
     $ltrend =~ s/\.$//;
 
-    
+
     if ($canon) {
         my $ncanon = 0;
 
@@ -254,32 +255,32 @@ print(STDERR "user::decodeEncryptedUserID: Inner CRC bad:  RCRC = $rcrc  ICRC = 
     $mlog->{trend_carry_forward} = $ltrend;
     $mlog->computeTrend();
 
-    
+
     $mlog->{last_modification_time} = time();
-    open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
-        die("Cannot create monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+    open(FL, ">:utf8", "$dataDir/Users/$user_file_name/$logs[$i].hdb") ||
+        die("Cannot create monthly log file $dataDir/Users/$user_file_name/$logs[$i].hdb");
     $mlog->save(\*FL);
     close(FL);
-    clusterCopy("/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
+    clusterCopy("$dataDir/Users/$user_file_name/$logs[$i].hdb");
 
 
     $ltrend = $mlog->{trend}[$mlog->monthdays()];
     undef($mlog);
 
         }
-        
+
         if ($user->{badge_trend} != 0) {
-            open(FB, ">/server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png") ||
-                die("Cannot update monthly log file /server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png");
+            open(FB, ">$dataDir/Users/$user_file_name/BadgeImageNew.png") ||
+                die("Cannot update monthly log file $dataDir/Users/$user_file_name/BadgeImageNew.png");
             my $hist = HDiet::history->new($user, $user_file_name);
             $hist->drawBadgeImage(\*FB, $user->{badge_trend});
             close(FB);
-            do_command("mv /server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png /server/pub/hackdiet/Users/$user_file_name/BadgeImage.png");
-            clusterCopy("/server/pub/hackdiet/Users/$user_file_name/BadgeImage.png");
+            do_command("mv $dataDir/Users/$user_file_name/BadgeImageNew.png $dataDir/Users/$user_file_name/BadgeImage.png");
+            clusterCopy("$dataDir/Users/$user_file_name/BadgeImage.png");
         }
    }
 
-    
+
     sub append_history {
         my ($user_file, $type, $extra) = @_;
 
@@ -287,34 +288,34 @@ print(STDERR "user::decodeEncryptedUserID: Inner CRC bad:  RCRC = $rcrc  ICRC = 
         if ($extra ne '') {
             $extra = ',' . $extra;
         }
-        open(FH, ">>:utf8", "/server/pub/hackdiet/Users/$user_file/History.hdh") ||
-           die("Cannot append to history file /server/pub/hackdiet/Users/$user_file/History.hdh");
+        open(FH, ">>:utf8", "$dataDir/Users/$user_file/History.hdh") ||
+           die("Cannot append to history file $dataDir/Users/$user_file/History.hdh");
         print(FH "$type," . time() . ",$ENV{REMOTE_ADDR}$extra\n");
         close(FH);
-        clusterCopy("/server/pub/hackdiet/Users/$user_file/History.hdh");
+        clusterCopy("$dataDir/Users/$user_file/History.hdh");
     }
 
-    
+
     sub update_last_transaction {
         my ($user_file) = @_;
 
         #   Update the date and time of the last transaction by this user
         my $now = time();
-        open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file/LastTransaction.hdl") ||
-            die("Cannot update last transaction file /server/pub/hackdiet/Users/$user_file/LastTransaction.hdl");
+        open(FL, ">:utf8", "$dataDir/Users/$user_file/LastTransaction.hdl") ||
+            die("Cannot update last transaction file $dataDir/Users/$user_file/LastTransaction.hdl");
         print FL <<"EOD";
 1
 $now
 EOD
         close(FL);
-        clusterCopy("/server/pub/hackdiet/Users/$user_file/LastTransaction.hdl");
+        clusterCopy("$dataDir/Users/$user_file/LastTransaction.hdl");
    }
 
-    
+
     sub last_transaction_time {
         my ($user_file) = @_;
 
-        if (open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file/LastTransaction.hdl")) {
+        if (open(FL, "<:utf8", "$dataDir/Users/$user_file/LastTransaction.hdl")) {
             my $lt = 0;
             my $s = in(\*FL);
             if ($s == 1) {          # Only proceed if version correct
@@ -329,8 +330,8 @@ EOD
             return 0;
         }
    }
-   
-   
+
+
     sub in {
         my ($fh, $default) = @_;
         my $s;
@@ -347,28 +348,28 @@ EOD
     }
 
 
-    
+
     sub is_user_session_open {
         my ($user_name) = @_;
 
         my $user_file_name = quoteUserName($user_name);
-        if ((-f "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")
-            && open(FS, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")) {
+        if ((-f "$dataDir/Users/$user_file_name/ActiveSession.hda")
+            && open(FS, "<:utf8", "$dataDir/Users/$user_file_name/ActiveSession.hda")) {
             my $asn = load_active_session(\*FS);
             close(FS);
-            if (-f "/server/pub/hackdiet/Sessions/$asn.hds") {
+            if (-f "$dataDir/Sessions/$asn.hds") {
                 return 1;
             } else {
-                unlink("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
-                clusterDelete("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
-#print(STDERR "is_user_session_open abstergifying orphaned session /server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda\n");
+                unlink("$dataDir/Users/$user_file_name/ActiveSession.hda");
+                clusterDelete("$dataDir/Users/$user_file_name/ActiveSession.hda");
+#print(STDERR "is_user_session_open abstergifying orphaned session $dataDir/Users/$user_file_name/ActiveSession.hda\n");
             }
         }
         return 0;
    }
 
 
-    
+
     sub parseWeight {
         my ($w, $unit) = @_;
 
@@ -388,7 +389,7 @@ EOD
         return $n;
     }
 
-    
+
     sub parseSignedWeight {
         my ($w, $unit) = @_;
         my $sgn = 1;
@@ -406,7 +407,7 @@ EOD
     }
 
 
-    
+
     sub wrapText {
         my ($t, $columns) = @_;
 
@@ -446,7 +447,7 @@ EOD
 
 
 
-    
+
     sub print_command_line_help {
         print << "EOD";
 Usage: HackDiet.pl [ options ]
@@ -460,7 +461,7 @@ Version 1.0, August 2007
 EOD
    }
 
-    
+
     #   Return least of arguments
     sub min {
         my $v = 1e308;
@@ -495,7 +496,7 @@ EOD
         return sprintf("%.0f", shift());
     }
 
-    
+
     sub do_command {
         my ($cmd, $annotation) = @_;
 
@@ -513,14 +514,14 @@ EOD
         }
     }
 
-    
+
 #    sub etime {
 #        my ($sec, $min, $hour, $mday, $mon, $year) = localtime($_[0]);
 #        return sprintf("%d-%02d-%02d %02d:%02d",
 #            $year + 1900, $mon + 1, $mday, $hour, $min);
 #    }
 
-    
+
     sub toHex {
         my ($s) = @_;
 
@@ -532,7 +533,7 @@ EOD
         return $h;
     }
 
-    
+
     sub isCurrentMonth {
         my ($lyear, $lmonth) = @_;
 
@@ -554,7 +555,7 @@ EOD
                ($server_jd <= ($next_month_jd - 1));
     }
 
-    
+
     sub encodeDomainName {
         my ($idn) = @_;
 
@@ -569,13 +570,13 @@ EOD
         return $dn;
     }
 
-    
+
     sub validMailDomain {
         my ($dn) = @_;
 
         my $nmx = `dig +short $dn MX | egrep -v ' 127\.0\.0.' | wc -l`;
         $nmx =~ s/\s//g;
-        
+
         if ($nmx == 0) {
             $nmx = `dig +short $dn A | egrep -v ' 127\.0\.0.' | wc -l`;
             $nmx =~ s/\s//g;
@@ -584,7 +585,7 @@ EOD
         return $nmx > 0;
     }
 
-    
+
     sub drawText {
         my ($img, $text, $font, $size, $angle, $x, $y, $alignh, $alignv, $colour) = @_;
 
@@ -617,7 +618,7 @@ EOD
     }
 
 
-    
+
     sub parse_cgi_arguments {
         my $data;
 #   NOTE: On Perl 5.8.5 we needed to read the CGI POST arguments
@@ -631,7 +632,7 @@ EOD
 #            binmode(STDIN, ":raw");
 #        }
         binmode(STDIN, ":raw");
-        
+
         my $query = new CGI;
 #print("Content-type: text/plain\r\n\r\nQuery:\n");
 #use Data::Dumper;
@@ -668,7 +669,7 @@ for my $k (keys %CGIfields) {
         return %CGIfields;
     }
 
-    
+
     sub ndz {
         return defined($_[0]) ? $_[0] : 0;
     }
@@ -676,6 +677,3 @@ for my $k (keys %CGIfields) {
     sub ndb {
         return defined($_[0]) ? $_[0] : '';
     }
-
-
-    

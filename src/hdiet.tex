@@ -734,7 +734,7 @@ $\langle\,$Production Executable Installation Directory\nobreak\ {\footnotesize 
 $\langle\,$Database Directory\nobreak\ {\footnotesize \NWtarget{nuweb6f}{6f}}$\,\rangle\equiv$
 \vspace{-1ex}
 \begin{list}{}{} \item
-\mbox{}\verb@/server/pub/hackdiet@{\NWsep}
+\mbox{}\verb@$dataDir@{\NWsep}
 \end{list}
 \vspace{-1ex}
 \footnotesize\addtolength{\baselineskip}{-1ex}
@@ -36351,8 +36351,8 @@ by logging into one host, say {\tt server1}, and then running
 a command like:
 
 \begin{verbatim}
-    rdist -overify -P /usr/bin/ssh -c /server/pub/hackdiet \
-        server0:/server/pub/hackdiet
+    rdist -overify -P /usr/bin/ssh -c $dataDir \
+        server0:$dataDir
 \end{verbatim}
 
 This will report any discrepancies between the database directory

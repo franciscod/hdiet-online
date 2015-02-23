@@ -1,16 +1,17 @@
 #! /usr/bin/perl
 
-    
+
     require 5;
     use strict;
     use warnings;
     use utf8;
 
+    my $dataDir = "/var/lib/hackdiet";
 
     use HDiet::monthlog;
 
     package HDiet::Aggregator;
-    
+
     use HDiet::Julian;
 
     require Exporter;
@@ -49,10 +50,10 @@
             my @users = @$user_list;
             for my $u (@users) {
                 my $user_file_name = HDiet::user::quoteUserName($u);
-                
+
 #my $recret = 0;
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account directory /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account directory $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -62,9 +63,9 @@
         my ($cur_y, $cur_m, $cur_d) = ($from_y, $from_m, $from_d);
         for (my $j = $start_jd; $j <= $end_jd; ) {
             my $monkey = sprintf("%04d-%02d", $cur_y, $cur_m);
-            if (-f "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") {
-                open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") ||
-                    die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$monkey.hdb");
+            if (-f "$dataDir/Users/$user_file_name/$monkey.hdb") {
+                open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$monkey.hdb") ||
+                    die("Cannot open monthly log file $dataDir/Users/$user_file_name/$monkey.hdb");
                 my $mlog = HDiet::monthlog->new();
                 $mlog->load(\*FL);
                 close(FL);
@@ -84,7 +85,7 @@
                     if ($j > $end_jd) {
                         last;
                     }
-                }           
+                }
             }
             $cur_m++;
             $cur_d = 1;
@@ -98,13 +99,13 @@
 
             }
         } else {
-            opendir(CD, "/server/pub/hackdiet/Users") ||
-                die("Cannot open directory /server/pub/hackdiet/Users");
+            opendir(CD, "$dataDir/Users") ||
+                die("Cannot open directory $dataDir/Users");
             for my $user_file_name (grep(!/\.\.?\z/, readdir(CD))) {
-                
+
 #my $recret = 0;
-    open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
-        die("Cannot open user account directory /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
+    open(FU, "<:utf8", "$dataDir/Users/$user_file_name/UserAccount.hdu") ||
+        die("Cannot open user account directory $dataDir/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
     $ui->load(\*FU);
     close(FU);
@@ -114,9 +115,9 @@
         my ($cur_y, $cur_m, $cur_d) = ($from_y, $from_m, $from_d);
         for (my $j = $start_jd; $j <= $end_jd; ) {
             my $monkey = sprintf("%04d-%02d", $cur_y, $cur_m);
-            if (-f "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") {
-                open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$monkey.hdb") ||
-                    die("Cannot open monthly log file /server/pub/hackdiet/Users/$user_file_name/$monkey.hdb");
+            if (-f "$dataDir/Users/$user_file_name/$monkey.hdb") {
+                open(FL, "<:utf8", "$dataDir/Users/$user_file_name/$monkey.hdb") ||
+                    die("Cannot open monthly log file $dataDir/Users/$user_file_name/$monkey.hdb");
                 my $mlog = HDiet::monthlog->new();
                 $mlog->load(\*FL);
                 close(FL);
@@ -136,7 +137,7 @@
                     if ($j > $end_jd) {
                         last;
                     }
-                }           
+                }
             }
             $cur_m++;
             $cur_d = 1;
@@ -151,6 +152,6 @@
             }
             closedir(CD);
         }
-        
+
         return ($naccts, $npaccts);
     }

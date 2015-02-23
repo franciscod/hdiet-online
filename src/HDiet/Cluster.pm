@@ -1,14 +1,15 @@
 #! /usr/bin/perl
 
-    
+
     require 5;
     use strict;
     use warnings;
     use utf8;
 
+    my $dataDir = "/var/lib/hackdiet";
 
     package HDiet::Cluster;
-    
+
     use Time::HiRes qw( gettimeofday );
     use Digest::SHA1  qw(sha1_hex);
 
@@ -18,14 +19,14 @@
     our @EXPORT = qw( clusterConfiguration
                        clusterCopy clusterDelete clusterMkdir clusterRmdir clusterRecursiveDelete );
     our @EXPORT_OK = qw( command );
-    
+
     my @clusterHosts = qw (server0.fourmilab.ch server1.fourmilab.ch server2.fourmilab.ch);
     my $hostname = $ENV{SERVER_NAME};
 #$hostname = "server0.fourmilab.ch" if !defined($hostname);
     my $journal_sequence = 0;
-    
+
     1;
-    
+
     use constant FILE_VERSION => 1;     # If you change this, change in ClusterSync.pl below also!
 
     sub clusterConfiguration {
@@ -35,8 +36,8 @@
             $outfile = \*STDOUT;
         }
         print($outfile "Host name: $hostname\n");
-        
-        if ("/server/pub/hackdiet/ClusterSync" eq '') {
+
+        if ("$dataDir/ClusterSync" eq '') {
             print($outfile "Clustering disabled: Cluster Transaction Directory not specified\n");
         } elsif ($#clusterHosts < 0) {
             print($outfile "Clustering disabled: No Cluster Member Hosts configured\n");
@@ -52,17 +53,17 @@
                     print($outfile ']');
                 }
             }
-            
+
     print($outfile "\n");
-    print($outfile "Transaction directory: /server/pub/hackdiet/ClusterSync  ");
-    if (-d "/server/pub/hackdiet/ClusterSync") {
+    print($outfile "Transaction directory: $dataDir/ClusterSync  ");
+    if (-d "$dataDir/ClusterSync") {
         print($outfile "Exists\n");
         for (my $i = 0; $i <= $#clusterHosts; $i++) {
             if ($clusterHosts[$i] ne $hostname) {
-                print($outfile "  Server directory: /server/pub/hackdiet/ClusterSync/$clusterHosts[$i]: ");
-                if (-d "/server/pub/hackdiet/ClusterSync/$clusterHosts[$i]") {
+                print($outfile "  Server directory: $dataDir/ClusterSync/$clusterHosts[$i]: ");
+                if (-d "$dataDir/ClusterSync/$clusterHosts[$i]") {
                     my $n = 0;
-                    if (opendir(DI, "/server/pub/hackdiet/ClusterSync/$clusterHosts[$i]")) {
+                    if (opendir(DI, "$dataDir/ClusterSync/$clusterHosts[$i]")) {
                         my $e;
                         while ($e = readdir(DI)) {
                             if ($e !~ m/^\./) {
@@ -88,10 +89,10 @@
 
     sub enqueueClusterTransaction {
         my ($operation, $filename) = @_;
-        
-        if (("/server/pub/hackdiet/ClusterSync" ne '') &&
+
+        if (("$dataDir/ClusterSync" ne '') &&
             ($#clusterHosts >= 0) &&
-            (-d "/server/pub/hackdiet/ClusterSync")) {
+            (-d "$dataDir/ClusterSync")) {
             my ($sec, $usec) = gettimeofday();
             my $efn = $filename;
             $efn =~ s:[\./]:_:g;
@@ -99,10 +100,10 @@
                                 ++$journal_sequence, $operation, $efn);
             for (my $i = 0; $i <= $#clusterHosts; $i++) {
                 if ($clusterHosts[$i] ne $hostname) {
-                    if (-d "/server/pub/hackdiet/ClusterSync/$clusterHosts[$i]") {
-                        open(TO, ">:utf8", "/server/pub/hackdiet/ClusterSync/$clusterHosts[$i]/$transname") ||
+                    if (-d "$dataDir/ClusterSync/$clusterHosts[$i]") {
+                        open(TO, ">:utf8", "$dataDir/ClusterSync/$clusterHosts[$i]/$transname") ||
                             die("Unable to create cluster transaction " .
-                                "/server/pub/hackdiet/ClusterSync/$clusterHosts[$i]/$transname");
+                                "$dataDir/ClusterSync/$clusterHosts[$i]/$transname");
                         print(TO FILE_VERSION . "\n");
                         print(TO "$operation\n");
                         print(TO "$filename\n");
@@ -126,30 +127,30 @@
 
     sub clusterCopy {
         my ($filename) = @_;
-        
+
         enqueueClusterTransaction('copy', $filename);
     }
 
     sub clusterDelete {
         my ($filename) = @_;
-        
+
         enqueueClusterTransaction('delete', $filename);
     }
 
     sub clusterMkdir {
         my ($filename) = @_;
-        
+
         enqueueClusterTransaction('mkdir', $filename);
     }
 
     sub clusterRmdir {
         my ($filename) = @_;
-        
+
         enqueueClusterTransaction('rmdir', $filename);
     }
 
     sub clusterRecursiveDelete {
         my ($filename) = @_;
-        
+
         enqueueClusterTransaction('rmrf', $filename);
     }

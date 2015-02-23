@@ -430,7 +430,7 @@ images we generate.
 @d Executable Installation Directory @{/server1/bin/hackdiet@}
 @d Production Executable Installation Directory @{/server/bin/hackdiet@}
 
-@d Database Directory @{/server/pub/hackdiet@}
+@d Database Directory @{$dataDir@}
 
 All of the application's data are kept in this directory and
 its subdirectories.  This directory may be located anywhere on
@@ -26938,8 +26938,8 @@ by logging into one host, say {\tt server1}, and then running
 a command like:
 
 \begin{verbatim}
-    rdist -overify -P /usr/bin/ssh -c /server/pub/hackdiet \
-        server0:/server/pub/hackdiet
+    rdist -overify -P /usr/bin/ssh -c $dataDir \
+        server0:$dataDir
 \end{verbatim}
 
 This will report any discrepancies between the database directory

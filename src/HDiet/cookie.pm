@@ -1,17 +1,18 @@
 #! /usr/bin/perl
 
-    
+
     require 5;
     use strict;
     use warnings;
     use utf8;
 
+    my $dataDir = "/var/lib/hackdiet";
 
     package HDiet::cookie;
 
     use Encode qw(encode_utf8);
     use Digest::SHA1  qw(sha1_hex);
-    
+
     use HDiet::Cluster;
     use HDiet::Julian;
     use HDiet::Digest::Crc32;
@@ -98,7 +99,7 @@
         $self->{expiry_time} = in($infile);
     }
 
-    
+
     sub in {
         my ($fh, $default) = @_;
         my $s;
@@ -117,62 +118,62 @@
 
     sub signCookie {
         my $self = shift;
-        
+
         my $crc = new HDiet::Digest::Crc32();
         my $cookSig = sprintf("%08x", $crc->strcrc32("Sodium Chloride" .
-            $self->{cookie_id}));        
+            $self->{cookie_id}));
         $cookSig =~ tr/a-f/FGJKQW/;
-        
+
         return substr($self->{cookie_id}, 0, 23) . $cookSig . substr($self->{cookie_id}, 23);
     }
 
     sub generateCookie {
         my $self = shift;
         my ($name) = @_;
-                
+
         return "$name=" . $self->signCookie() . "; " .
                "Domain=.fourmilab.ch; " .
                "Path=/cgi-bin/HackDiet; " .
-               "Expires=" . 
+               "Expires=" .
                 jd_to_old_cookie_date(unix_time_to_jd($self->{expiry_time}));
     }
 
     sub expireCookie {
         my $self = shift;
         my ($name) = @_;
-                
+
         return "$name=EXPIRED; " .
                "Domain=.fourmilab.ch; " .
                "Path=/cgi-bin/HackDiet; " .
-               "Expires=" . 
+               "Expires=" .
                 jd_to_old_cookie_date(gregorian_to_jd(1990, 1, 1));
     }
 
     sub storeCookie {
         my ($ui) = @_;
-        
-        my $cook = HDiet::cookie->new($ui->{login_name}, time());    
-         open(CO, ">:utf8", "/server/pub/hackdiet/RememberMe/$cook->{cookie_id}.hdr") ||
-            die("Cannot create persistent login file /server/pub/hackdiet/RememberMe/$cook->{cookie_id}.hdr");
+
+        my $cook = HDiet::cookie->new($ui->{login_name}, time());
+         open(CO, ">:utf8", "$dataDir/RememberMe/$cook->{cookie_id}.hdr") ||
+            die("Cannot create persistent login file $dataDir/RememberMe/$cook->{cookie_id}.hdr");
         $cook->save(\*CO);
         close(CO);
-        clusterCopy("/server/pub/hackdiet/RememberMe/$cook->{cookie_id}.hdr");
-        
+        clusterCopy("$dataDir/RememberMe/$cook->{cookie_id}.hdr");
+
         return $cook->generateCookie('HDiet');
     }
 
     sub testCookiePresent {
         my ($name) = @_;
- 
+
         my $cuser;
-        
+
         if (defined($ENV{HTTP_COOKIE}) &&
             ($ENV{HTTP_COOKIE} =~ m/$name=([0-9FGJKQW]{48})/)) {
             my $csig = $1;
             my $cid = checkCookieSignature($csig);
             if (defined($cid)) {
-                if (-f "/server/pub/hackdiet/RememberMe/$cid.hdr") {
-                    if (open(CI, "<:utf8", "/server/pub/hackdiet/RememberMe/$cid.hdr")) {
+                if (-f "$dataDir/RememberMe/$cid.hdr") {
+                    if (open(CI, "<:utf8", "$dataDir/RememberMe/$cid.hdr")) {
                         my $cook = HDiet::cookie->new();
                         $cook->load(\*CI);
                         close(CI);
@@ -181,8 +182,8 @@
                             $cuser = $cook->{login_name};
                         }
                     }
-                    unlink("/server/pub/hackdiet/RememberMe/$cid.hdr");
-                    clusterDelete("/server/pub/hackdiet/RememberMe/$cid.hdr");
+                    unlink("$dataDir/RememberMe/$cid.hdr");
+                    clusterDelete("$dataDir/RememberMe/$cid.hdr");
                 }
             }
         }
@@ -191,14 +192,14 @@
 
     sub checkCookieSignature {
         my ($signedCookie) = @_;
-        
+
         if ($signedCookie !~ m/^[0-9FGJKQW]{48}$/) {
 #print("Cookie syntax bad signedCookie ($signedCookie)\n");
             return undef;
         }
-        
+
         my $crc = new HDiet::Digest::Crc32();
-        
+
         my $cookieSig = substr($signedCookie, 23, 8, "");
         $cookieSig =~ tr/FGJKQW/a-f/;
         my $cookSig = sprintf("%08x", $crc->strcrc32("Sodium Chloride" .
