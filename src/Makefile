@@ -1,16 +1,8 @@
+WEBDIR = /var/www
 
+CGIDIR = /usr/lib/cgi-bin
 
-WEBDIR = /server1/pub/www.fourmilab.ch/web/hackdiet/online
-
-CGIDIR = /server1/bin/httpd/cgi-bin
-
-EXEDIR = /server1/bin/hackdiet
-
-WEBDIR_PRODUCTION = /server/pub/www.fourmilab.ch/web/hackdiet/online
-
-CGIDIR_PRODUCTION = /server/bin/httpd/cgi-bin
-
-EXEDIR_PRODUCTION = /server/bin/hackdiet
+EXEDIR = /usr/local/bin/hackdiet
 
 PROGRAMS = jig.pl bump
 
@@ -29,44 +21,31 @@ jig.pl:    hdiet.w
 
 
 publish:
-	cp -p webapp.html hdiet.css hdiet_handheld.css hdiet.js hackersdiet.dtd \
-	      hackdiet_db.css wz_jsgraphics.js $(WEBDIR)
+
+	cp -p webapp.html hdiet.css hdiet_handheld.css hdiet.js hackersdiet.dtd hackdiet_db.css wz_jsgraphics.js $(WEBDIR)
+
 	cp -p HackDiet.pl $(CGIDIR)/HackDiet.NEW
 	chmod 755 $(CGIDIR)/HackDiet.NEW
 	mv $(CGIDIR)/HackDiet.NEW $(CGIDIR)/HackDiet
+
 	cp -p HackDietBadge.pl $(CGIDIR)/HackDietBadge.NEW
 	chmod 755 $(CGIDIR)/HackDietBadge.NEW
 	mv $(CGIDIR)/HackDietBadge.NEW $(CGIDIR)/HackDietBadge
+
+	mkdir -p  $(CGIDIR)/HDiet
 	cp -pr HDiet/* $(CGIDIR)/HDiet
+
+	mkdir -p $(EXEDIR)
 	mv $(CGIDIR)/HDiet/ClusterSync.pl $(EXEDIR)/ClusterSync.NEW
 	chmod 755 $(EXEDIR)/ClusterSync.NEW
 	mv $(EXEDIR)/ClusterSync.NEW $(EXEDIR)/ClusterSync
 
-production:
-	cp -p webapp.html hdiet.css hdiet_handheld.css hdiet.js hackersdiet.dtd \
-	      hackdiet_db.css wz_jsgraphics.js $(WEBDIR_PRODUCTION)
-	cp -p HackDiet.pl $(CGIDIR_PRODUCTION)/HackDiet.NEW
-	chmod 755 $(CGIDIR_PRODUCTION)/HackDiet.NEW
-	mv $(CGIDIR_PRODUCTION)/HackDiet.NEW $(CGIDIR_PRODUCTION)/HackDiet
-	cp -p HackDietBadge.pl $(CGIDIR_PRODUCTION)/HackDietBadge.NEW
-	chmod 755 $(CGIDIR_PRODUCTION)/HackDietBadge.NEW
-	mv $(CGIDIR_PRODUCTION)/HackDietBadge.NEW $(CGIDIR_PRODUCTION)/HackDietBadge
-	cp -pr HDiet/* $(CGIDIR_PRODUCTION)/HDiet
-	mv $(CGIDIR_PRODUCTION)/HDiet/ClusterSync.pl $(EXEDIR_PRODUCTION)/ClusterSync.NEW
-	chmod 755 $(EXEDIR_PRODUCTION)/ClusterSync.NEW
-	mv $(EXEDIR_PRODUCTION)/ClusterSync.NEW $(EXEDIR_PRODUCTION)/ClusterSync
-
 
 
 pubsrc:
-	if [ ! -d $(WEBDIR)/download/1.0 ] ; then mkdir $(WEBDIR)/download/1.0 ; fi
+	if [ ! -d $(WEBDIR)/download/1.0 ] ; then mkdir -p $(WEBDIR)/download/1.0 ; fi
 	cp -p Bowdler/hdiet-1.0.tar.gz $(WEBDIR)/download/1.0
 	cp -p Bowdler/hdiet.pdf $(WEBDIR)/download/1.0
-
-prodsrc:
-	if [ ! -d $(WEBDIR_PRODUCTION)/download/1.0 ] ; then mkdir $(WEBDIR_PRODUCTION)/download/1.0 ; fi
-	cp -p Bowdler/hdiet-1.0.tar.gz $(WEBDIR_PRODUCTION)/download/1.0
-	cp -p Bowdler/hdiet.pdf $(WEBDIR_PRODUCTION)/download/1.0
 
 
 
@@ -117,7 +96,7 @@ viewpdf: pdf
 
 
 
-check:	$(PROGRAMS)
+check:	$(PROGRAMS) weblint
 	perl -c HackDiet.pl
 	perl -c HDiet/Aggregator.pm
 	perl -c HDiet/Cluster.pm
@@ -136,7 +115,6 @@ check:	$(PROGRAMS)
 	perl -c Bowdler.pl
 	perl -c HackDietBadge.pl
 	perl -c jig.pl
-	weblint webapp.html
 
 test:	$(PROGRAMS)
 	perl jig.pl --verbose --test
@@ -151,4 +129,3 @@ clean:
 
 cvsclean:  clean
 	rm -f hdiet.pdf jig.pl *.pm hdiet.tex webapp.html
-
