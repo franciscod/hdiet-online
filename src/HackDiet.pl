@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-    
+
 =head1 NAME
 
 HackDiet - Hacker's Diet Online Database Interface
@@ -69,8 +69,8 @@ This program is in the public domain.
 =cut
 
 
-    
-    
+
+
     require 5;
     use strict;
     use warnings;
@@ -87,8 +87,9 @@ This program is in the public domain.
     use Socket qw(inet_aton);
     use Sys::Syslog;
 
+    my cgiBin = "/usr/lib/cgi-bin"
 
-    use lib "/server/bin/httpd/cgi-bin/HDiet/Cgi";
+    use lib "$cgiBin/HDiet/Cgi";
     use CGI;
 
     use HDiet::Aggregator;
@@ -106,11 +107,11 @@ This program is in the public domain.
     use HDiet::Util::IDNA::Punycode;
     use HDiet::Text::CSV;
 
-    
 
 
 
-    
+
+
     #   Processing arguments and options
 
     my $verbose = 0;            # Verbose output for debugging
@@ -130,7 +131,7 @@ This program is in the public domain.
 
     my @chartSizes = ( '320x240', '480x360', '512x384', '640x480', '800x600', '1024x768', '1200x900', '1600x1200' );
 
-    my @feedback_categories = ( 
+    my @feedback_categories = (
     '(Not specified)',
     'Problem report',
     'Recommendation for change',
@@ -143,8 +144,8 @@ This program is in the public domain.
 
 
 
-    
-    
+
+
     $SIG{INT} =
         sub {
             my $i = 0;
@@ -163,7 +164,7 @@ This program is in the public domain.
 
     my $dataBase = "/server/pub/hackdiet";
 
-    
+
     use Getopt::Long;
 
     GetOptions(
@@ -175,7 +176,7 @@ This program is in the public domain.
               );
 
 
-    
+
     {
         my $ok = 1;
 
@@ -202,7 +203,7 @@ This program is in the public domain.
     my $cookieUser;
     our @HTTP_header;
 
-    
+
     my %browsing_user_requests = (
         account => 1,
         browsepub => 1,
@@ -218,7 +219,7 @@ This program is in the public domain.
         trendan => 1
     );
 
-    
+
     if (!defined $CGIargs{q}) {
         for my $qk (keys(%CGIargs)) {
             if ($qk =~ m/^(\w+)=(.*)$/) {
@@ -227,7 +228,7 @@ This program is in the public domain.
         }
     }
 
-    
+
     my ($timeZoneOffset, $userTime) = ('unknown', time());
     if (defined($CGIargs{HDiet_tzoffset})) {
         if ($CGIargs{HDiet_tzoffset} =~ m/^\-?\d+$/) {
@@ -246,11 +247,11 @@ This program is in the public domain.
 #print(STDERR "Local time($CGIargs{HDiet_tzoffset}:$timeZoneOffset): $userYear-$userMon-$userMday $userHour:$userMin:$userSec\n");
 #}
 
-    
+
     if (defined $CGIargs{q}) {
         if ($CGIargs{q} eq 'chart') {
-            
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -291,7 +292,7 @@ This program is in the public domain.
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -323,13 +324,13 @@ This program is in the public domain.
     }
 
 
-    
+
     if (!(($CGIargs{m} =~ m/^(\d\d\d\d)\-(\d\d)$/) &&
         ($1 >= 1980) && ($1 <= ((unix_time_to_civil_date_time($userTime))[0] + 1)) &&
         ($2 >= 1) && ($2 <= 12))) {
         if (!$inHTML) {
             if ($ENV{'REQUEST_METHOD'}) {
-                
+
     print($fh "Content-type: text/html\r\n\r\n");
 
             }
@@ -360,14 +361,14 @@ EOD
     }
 
 
-    
-    
+
+
     if (!(($CGIargs{m} =~ m/^(\d\d\d\d)\-(\d\d)$/) &&
         ($1 >= 1980) && ($1 <= ((unix_time_to_civil_date_time($userTime))[0] + 1)) &&
         ($2 >= 1) && ($2 <= 12))) {
         if (!$inHTML) {
             if ($ENV{'REQUEST_METHOD'}) {
-                
+
     print($fh "Content-type: text/html\r\n\r\n");
 
             }
@@ -414,7 +415,7 @@ EOD
         $mlog->{last_modification_time} = 0;
         $mlog->{trend_carry_forward} = 0;
     }
-    
+
     if ($mlog->{trend_carry_forward} == 0) {
         my $cmon = sprintf("%04d-%02d", $mlog->{year}, $mlog->{month});
         my @logs = $ui->enumerateMonths();
@@ -439,7 +440,7 @@ EOD
 
 
 
-    
+
     print($fh "Content-type: image/png\r\n\r\n");
 
 
@@ -459,8 +460,8 @@ EOD
     exit(0);
 
         } elsif ($CGIargs{q} eq 'histchart') {
-            
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -501,7 +502,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -535,7 +536,7 @@ EOD
 
     my $hc = HDiet::history->new($ui, $user_file_name);
 
-    
+
     print($fh "Content-type: image/png\r\n\r\n");
 
 
@@ -560,8 +561,8 @@ EOD
     exit(0);
 
         } elsif ($CGIargs{q} eq 'csvout') {
-            
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -602,7 +603,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -634,14 +635,14 @@ EOD
     }
 
 
-    
-    
+
+
     if (!(($CGIargs{m} =~ m/^(\d\d\d\d)\-(\d\d)$/) &&
         ($1 >= 1980) && ($1 <= ((unix_time_to_civil_date_time($userTime))[0] + 1)) &&
         ($2 >= 1) && ($2 <= 12))) {
         if (!$inHTML) {
             if ($ENV{'REQUEST_METHOD'}) {
-                
+
     print($fh "Content-type: text/html\r\n\r\n");
 
             }
@@ -688,7 +689,7 @@ EOD
         $mlog->{last_modification_time} = 0;
         $mlog->{trend_carry_forward} = 0;
     }
-    
+
     if ($mlog->{trend_carry_forward} == 0) {
         my $cmon = sprintf("%04d-%02d", $mlog->{year}, $mlog->{month});
         my @logs = $ui->enumerateMonths();
@@ -722,8 +723,8 @@ EOD
     exit(0);
 
         } elsif ($CGIargs{q} eq 'xmlout') {
-            
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -764,7 +765,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -796,14 +797,14 @@ EOD
     }
 
 
-    
-    
+
+
     if (!(($CGIargs{m} =~ m/^(\d\d\d\d)\-(\d\d)$/) &&
         ($1 >= 1980) && ($1 <= ((unix_time_to_civil_date_time($userTime))[0] + 1)) &&
         ($2 >= 1) && ($2 <= 12))) {
         if (!$inHTML) {
             if ($ENV{'REQUEST_METHOD'}) {
-                
+
     print($fh "Content-type: text/html\r\n\r\n");
 
             }
@@ -850,7 +851,7 @@ EOD
         $mlog->{last_modification_time} = 0;
         $mlog->{trend_carry_forward} = 0;
     }
-    
+
     if ($mlog->{trend_carry_forward} == 0) {
         my $cmon = sprintf("%04d-%02d", $mlog->{year}, $mlog->{month});
         my @logs = $ui->enumerateMonths();
@@ -887,8 +888,8 @@ EOD
     exit(0);
 
         } elsif ($CGIargs{q} eq 'backup') {
-            
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -930,7 +931,7 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -1037,8 +1038,8 @@ write_XHTML_epilogue($fh, $homeBase);
     exit(0);
 
         } elsif ($CGIargs{q} eq 'do_exportdb') {
-            
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -1079,7 +1080,7 @@ write_XHTML_epilogue($fh, $homeBase);
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -1111,7 +1112,7 @@ write_XHTML_epilogue($fh, $homeBase);
     }
 
 
-    
+
     my $hist = HDiet::history->new($ui, $user_file_name);
     my ($s_y, $s_m, $s_d) = $hist->firstDay();
     my $s_jd = gregorian_to_jd($s_y, $s_m, $s_d);
@@ -1121,7 +1122,7 @@ write_XHTML_epilogue($fh, $homeBase);
 
     $CGIargs{from_d} = 1;
     $CGIargs{to_d} = 31;
-    
+
     my $custom = $CGIargs{period} && ($CGIargs{period} eq 'c');
     my ($cust_start_y, $cust_start_m, $cust_start_d, $cust_start_jd,
         $cust_end_y, $cust_end_m, $cust_end_d,$cust_end_jd);
@@ -1175,8 +1176,8 @@ write_XHTML_epilogue($fh, $homeBase);
     $CGIargs{format} = '?' if !$CGIargs{format};
 
     if ($CGIargs{format} eq 'xml') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -1217,7 +1218,7 @@ write_XHTML_epilogue($fh, $homeBase);
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -1297,8 +1298,8 @@ EOD
     exit(0);
 
     } elsif ($CGIargs{format} eq 'csv') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -1339,7 +1340,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -1415,8 +1416,8 @@ EOD
     exit(0);
 
     } elsif ($CGIargs{format} eq 'palm') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -1457,7 +1458,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -1511,8 +1512,8 @@ EOD
     exit(0);
 
     } elsif ($CGIargs{format} eq 'excel') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -1553,7 +1554,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -1612,12 +1613,12 @@ EOD
 EOD
     }
 
-    
+
     print($fh "Content-type: text/html\r\n\r\n");
 
     write_XHTML_prologue($fh, $homeBase, "Export Log Database", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -1672,10 +1673,10 @@ EOD
 
 requeue:
     binmode(STDOUT, ":utf8");
-    
+
     #   Emit Content-type if we were invoked as a CGI program
     if ($ENV{'REQUEST_METHOD'}) {
-        
+
     print($fh "Content-type: text/html\r\n\r\n");
 
     }
@@ -1683,14 +1684,14 @@ requeue:
     $inHTML = 1;
 
     while (1) {
-        
-    
+
+
     if ((!defined $CGIargs{q}) ||
         ($CGIargs{q} eq 'login') ||
         ($CGIargs{q} eq 'newlogin')) {
-        
+
     $CGIargs{HDiet_handheld} = 'y' if $CGIargs{handheld};
-    
+
     if ((!defined($CGIargs{q})) || ($CGIargs{q} ne 'newlogin')) {
         $cookieUser = testCookiePresent('HDiet');
         if (defined($cookieUser)) {
@@ -1700,7 +1701,7 @@ requeue:
             next;
         }
     }
-    
+
     write_XHTML_prologue($fh, $homeBase, "Please Sign In", " checkSecure();", $CGIargs{HDiet_handheld});
     print $fh <<"EOD";
 <h1 class="c">Please Sign In</h1>
@@ -1712,9 +1713,9 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'validate_user') {
-        
+
     if (defined($CGIargs{new})) {
-        
+
     write_XHTML_prologue($fh, $homeBase, "Create New Account", undef, $CGIargs{HDiet_handheld});
 
     print $fh <<"EOD";
@@ -1723,7 +1724,7 @@ EOD
 <div><input type="hidden" name="HDiet_tzoffset" id="tzoffset" value="unknown" /></div>
 EOD
 
-    
+
     if ($CGIargs{HDiet_handheld}) {
         print $fh <<"EOD";
 <div><input type="hidden" name="HDiet_handheld" value="y" /></div>
@@ -1754,13 +1755,13 @@ EOD
         }
 
         my ($user_file_name, $ui);
-        
+
         if ($cookieLogin) {
             $user_file_name = quoteUserName($cookieUser);
             if (!(-f "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu")
                 || (!open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu"))) {
-                
-    
+
+
     my @lt = localtime(time());
     my $ct = sprintf("%s %d %02d:%02d:%02d",
         MONTH_ABBREVIATIONS->[$lt[4]], $lt[3], $lt[2], $lt[1], $lt[0]);
@@ -1790,14 +1791,14 @@ EOD
             $CGIargs{HDiet_username} = $ui->{login_name};
             $CGIargs{HDiet_remember} = 'y';
         } else {
-            
+
     #   Verify user account directory exists and contains
     #   valid user information file.
     $user_file_name = quoteUserName($CGIargs{HDiet_username});
     if (!(-f "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu")
         || (!open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu"))) {
-        
-    
+
+
     my @lt = localtime(time());
     my $ct = sprintf("%s %d %02d:%02d:%02d",
         MONTH_ABBREVIATIONS->[$lt[4]], $lt[3], $lt[2], $lt[1], $lt[0]);
@@ -1829,8 +1830,8 @@ EOD
     if (($CGIargs{HDiet_password} eq '') && $ui->{read_only}) {
         $readOnly = 1;
     } elsif ($CGIargs{HDiet_password} ne $ui->{password}) {
-        
-    
+
+
     my @lt = localtime(time());
     my $ct = sprintf("%s %d %02d:%02d:%02d",
         MONTH_ABBREVIATIONS->[$lt[4]], $lt[3], $lt[2], $lt[1], $lt[0]);
@@ -1858,7 +1859,7 @@ EOD
 
         }
 
-        
+
     if ((!$readOnly) && (-f "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")
         && open(FS, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")) {
         my $asn = load_active_session(\*FS);
@@ -1871,7 +1872,7 @@ EOD
     }
 
 
-        
+
     #   Create new session and add file to session directory
     my $s = HDiet::session->new($CGIargs{HDiet_username});
     $s->{read_only} = $readOnly;
@@ -1893,7 +1894,7 @@ EOD
     }
 
 
-        
+
     #   Update the date and time of the last login by this user
     if ($readOnly) {
         open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/LastLogin.hdl") ||
@@ -1909,11 +1910,11 @@ EOD
     }
 
 
-        
+
     append_history($user_file_name, 1, "$s->{handheld},$s->{cookie}") if !$readOnly;
 
-        
-        
+
+
     if (!$ui->{read_only}) {
         if ($CGIargs{HDiet_remember}) {
             testCookiePresent('HDiet');
@@ -1943,7 +1944,7 @@ EOD
     }
 
     } elsif ($CGIargs{q} eq 'relogin') {
-        
+
     $CGIargs{HDiet_handheld} = 'y' if $CGIargs{handheld};
     write_XHTML_prologue($fh, $homeBase, "Please Sign In", " checkSecure();", $CGIargs{HDiet_handheld});
     print $fh <<"EOD";
@@ -1955,8 +1956,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'logout') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -2016,8 +2017,8 @@ EOD
     next;
 
     } elsif ($CGIargs{q} eq 'wipedb') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -2058,7 +2059,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -2096,7 +2097,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Delete Entire Database", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -2185,7 +2186,7 @@ below, and type the one-time &ldquo;confirmation code&rdquo;
 in the box.
 </p>
 EOD
-        
+
     my $concode = $ui->generatePassword(10);
     my $consig = sha1_hex($concode . "Sodium Chloride");
     $consig =~ tr/a-f/FGJKQW/;
@@ -2223,8 +2224,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'do_wipedb') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -2265,7 +2266,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -2299,7 +2300,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Log Database Deletion", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -2349,7 +2350,7 @@ EOD
 
     if (($CGIargs{HDiet_username} ne $ui->{login_name}) ||
         ($CGIargs{HDiet_password} ne $ui->{password})) {
-        
+
     print $fh <<"EOD";
 <h1 class="c">Log Database Deletion Rejected</h1>
 
@@ -2361,7 +2362,7 @@ deletion did not match those of your user account.</h3>
 EOD
 
     } elsif ($consig ne $CGIargs{c}) {
-        
+
     print $fh <<"EOD";
 <h1 class="c">Log Database Deletion Rejected</h1>
 
@@ -2374,7 +2375,7 @@ EOD
 
     } else {
         if (!$readOnly) {
-            
+
     my $tfn = timeXML(time());
     $tfn =~ s/:/./g;            # Avoid idiot tar treating time as hostname
     if ("/server/pub/hackdiet/Backups" ne '') {
@@ -2415,8 +2416,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'closeaccount') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -2457,7 +2458,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -2496,7 +2497,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Close User Account", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -2544,7 +2545,7 @@ EOD
 EOD
 
     if ($nmonths > 0) {
-        
+
         print $fh <<"EOD";
 <h3>You have $nmonths $mont of logs in the database.  Before you can
 close your account, you must
@@ -2579,7 +2580,7 @@ below, and type the one-time &ldquo;confirmation code&rdquo;
 in the box.
 </p>
 EOD
-        
+
     my $concode = $ui->generatePassword(10);
     my $consig = sha1_hex($concode . "Sodium Chloride");
     $consig =~ tr/a-f/FGJKQW/;
@@ -2618,8 +2619,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'do_closeaccount') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -2660,7 +2661,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -2694,7 +2695,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "User Account Close", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -2744,7 +2745,7 @@ EOD
 
     if (($CGIargs{HDiet_username} ne $ui->{login_name}) ||
         ($CGIargs{HDiet_password} ne $ui->{password})) {
-        
+
     print $fh <<"EOD";
 <h1 class="c">User Account Close Rejected</h1>
 
@@ -2756,7 +2757,7 @@ close did not match those of your user account.</h3>
 EOD
 
     } elsif ($consig ne $CGIargs{c}) {
-        
+
     print $fh <<"EOD";
 <h1 class="c">User Account Close Rejected</h1>
 
@@ -2771,7 +2772,7 @@ EOD
         my @months = $ui->enumerateMonths();
         my $nmonths = $#months + 1;
         if ($nmonths > 0) {
-            
+
     my $mont = 'month' . (($nmonths != 1) ? 's' : '');
     print $fh <<"EOD";
 <h1 class="c">User Account Close Rejected</h1>
@@ -2794,7 +2795,7 @@ EOD
                 unlink("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
                 clusterDelete("/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda");
 
-                
+
     my $tfn = timeXML(time());
     $tfn =~ s/:/./g;            # Avoid idiot tar treating time as hostname
     if ("/server/pub/hackdiet/Backups" ne '') {
@@ -2827,10 +2828,10 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
 
-    
+
     } elsif ($CGIargs{q} eq 'account') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -2871,7 +2872,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -2906,7 +2907,7 @@ EOD
     my $qun = quoteHTML($user_name);
     write_XHTML_prologue($fh, $homeBase, $qun, undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, "Utilities", undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -2949,7 +2950,7 @@ EOD
     }
 
 
-    
+
     if ($browse_public) {
         my $qrn = quoteHTML($real_user_name);
         print $fh <<"EOD";
@@ -2962,7 +2963,7 @@ EOD
     }
 
 
-    
+
     print $fh <<"EOD";
 <ul>
     <li><a href="/cgi-bin/HackDiet?s=$session->{session_id}&amp;q=log&amp;m=now$tzOff">Current monthly log</a></li>
@@ -2974,7 +2975,7 @@ EOD
 
 
     if ($browse_public) {
-        
+
     print $fh <<"EOD";
 
     <li class="skip"><a href="/cgi-bin/HackDiet?s=$session->{session_id}&amp;q=quitbrowse$tzOff">Quit browsing <b>$qun</b> public account</a></li>
@@ -2992,7 +2993,7 @@ EOD
 EOD
 
     } else {
-        
+
     print $fh <<"EOD";
     <li class="skip"><a href="/cgi-bin/HackDiet?s=$session->{session_id}&amp;q=modacct$tzOff">Edit account settings</a></li>
     <li><a href="/cgi-bin/HackDiet?s=$session->{session_id}&amp;q=configure_badge$tzOff">Configure Web page badge image</a></li>
@@ -3016,7 +3017,7 @@ EOD
         <form id="Hdiet_pubacct" method="post" action="/cgi-bin/HackDiet">
             <p style="margin-top: 0px; margin-bottom: 4px;">
             <input type="hidden" name="s" value="$session->{session_id}" />
-            Browse public user accounts: 
+            Browse public user accounts:
             <select name="acct_category" size="1">
                 <option value="active" selected="selected">Active accounts</option>
                 <option value="inactive">Inactive accounts</option>
@@ -3053,7 +3054,7 @@ EOD
 EOD
 
     if ($ui->{administrator} || $assumed_identity) {
-        
+
     print $fh <<"EOD";
 <h2 class="c">Administrator Functions</h2>
 
@@ -3062,7 +3063,7 @@ EOD
         <form id="Hdiet_admacct" method="post" action="/cgi-bin/HackDiet">
             <p style="margin-top: 0px; margin-bottom: 4px;">
             <input type="hidden" name="s" value="$session->{session_id}" />
-            Manage user accounts: 
+            Manage user accounts:
             <select name="acct_category" size="1">
                 <option value="active" selected="selected">Active accounts</option>
                 <option value="inactive">Inactive accounts</option>
@@ -3085,7 +3086,7 @@ EOD
             </p>
         </form>
 </li>
-    
+
     <li><a href="/cgi-bin/HackDiet?s=$session->{session_id}&amp;q=sessmgr$tzOff">Manage sessions</a></li>
     <li><a href="/cgi-bin/HackDiet?s=$session->{session_id}&amp;q=cookiemgr$tzOff">Manage persistent logins</a></li>
     <li><a href="/cgi-bin/HackDiet?s=$session->{session_id}&amp;q=globalstats$tzOff">Display global statistics</a></li>
@@ -3104,7 +3105,7 @@ EOD
 
     }
 
-    
+
 #    if (0) {
         my $bn = <<"EOD";
 5113
@@ -3122,9 +3123,9 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'new_account') {
-        
+
     my @goofs;
-    
+
 if (0) {        # Set to 1 to investigate reports of account creation problems
     open(NOF, ">/tmp/hdiet_newacct_$$.txt");
     use Data::Dumper;
@@ -3133,7 +3134,7 @@ if (0) {        # Set to 1 to investigate reports of account creation problems
 
 }
 
-    
+
     my $user_file_name;
     $CGIargs{HDiet_username} =~ s/\s+$//;
     if ($CGIargs{HDiet_username} eq '') {
@@ -3146,7 +3147,7 @@ if (0) {        # Set to 1 to investigate reports of account creation problems
     }
 
 
-    
+
     my $betaInvitation = '';
     if (0) {
         if (('Beta luck next time' eq '') ||
@@ -3186,7 +3187,7 @@ if (0) {        # Set to 1 to investigate reports of account creation problems
     }
 
     if ($#goofs >= 0) {
-        
+
     write_XHTML_prologue($fh, $homeBase, "Create New User Account", undef, $CGIargs{HDiet_handheld});
     print $fh <<"EOD";
 <h1 class="c">Errors in New Account Request</h1>
@@ -3209,7 +3210,7 @@ EOD
 <div><input type="hidden" name="HDiet_tzoffset" id="tzoffset" value="unknown" /></div>
 EOD
 
-    
+
     if ($CGIargs{HDiet_handheld}) {
         print $fh <<"EOD";
 <div><input type="hidden" name="HDiet_handheld" value="y" /></div>
@@ -3244,11 +3245,11 @@ EOD
 
     }
 
-    
+
     if (mkdir("/server/pub/hackdiet/Users/$user_file_name")) {
         clusterMkdir("/server/pub/hackdiet/Users/$user_file_name");
         my $ui = HDiet::user->new($CGIargs{HDiet_username});
-        
+
     if (defined($CGIargs{HDiet_height_cm})) {
         $CGIargs{HDiet_height_cm} =~ s/,/./g;
     }
@@ -3268,7 +3269,7 @@ EOD
         $ui->{password} = $CGIargs{HDiet_password};
     }
     $CGIargs{HDiet_dchar} = '.' if ($CGIargs{HDiet_dchar} !~ m/^[\.,]$/);
-    
+
     $ui->{first_name} = $CGIargs{HDiet_namef};
     $ui->{last_name} = $CGIargs{HDiet_namel};
     $ui->{middle_name} = $CGIargs{HDiet_namem};
@@ -3293,7 +3294,7 @@ EOD
         }
     }
 
-        
+
     open(FU, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     $ui->save(\*FU);
@@ -3303,7 +3304,7 @@ EOD
         $CGIargs{q} = 'login';
     } else {
          push(@goofs, "Sorry, somebody else just took that user name: please choose another");
-         
+
     write_XHTML_prologue($fh, $homeBase, "Create New User Account", undef, $CGIargs{HDiet_handheld});
     print $fh <<"EOD";
 <h1 class="c">Errors in New Account Request</h1>
@@ -3326,7 +3327,7 @@ EOD
 <div><input type="hidden" name="HDiet_tzoffset" id="tzoffset" value="unknown" /></div>
 EOD
 
-    
+
     if ($CGIargs{HDiet_handheld}) {
         print $fh <<"EOD";
 <div><input type="hidden" name="HDiet_handheld" value="y" /></div>
@@ -3362,7 +3363,7 @@ EOD
     }
 
 
-    
+
     if (0) {
         if ($betaInvitation ne '') {
             if (!unlink("/server/pub/hackdiet/Invitations/$betaInvitation.hdi")) {
@@ -3376,8 +3377,8 @@ EOD
     next;
 
     } elsif ($CGIargs{q} eq 'modacct') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -3418,7 +3419,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -3449,12 +3450,12 @@ EOD
         }
     }
 
-    
+
     if ($session->{cookie}) {
-        
+
     write_XHTML_prologue($fh, $homeBase, "Settings Inaccessible", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, "Settings", undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -3515,7 +3516,7 @@ EOD
 
         write_XHTML_prologue($fh, $homeBase, "Modify Account Settings", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, "Settings", undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -3587,8 +3588,8 @@ EOD
     }
 
     } elsif ($CGIargs{q} eq 'clearcookies') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -3629,7 +3630,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -3660,8 +3661,8 @@ EOD
         }
     }
 
-    
-    
+
+
     my %cookies;
 
     opendir(CD, "/server/pub/hackdiet/RememberMe") ||
@@ -3678,10 +3679,10 @@ EOD
     }
     closedir(CD);
 
-    
+
     write_XHTML_prologue($fh, $homeBase, "Forget Persistent Logins", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, "Settings", undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -3725,7 +3726,7 @@ EOD
 
 
     my $ndel = 0;
-#print($fh "<pre>\n");    
+#print($fh "<pre>\n");
     for my $f (keys(%cookies)) {
         my $cook = $cookies{$f};
         if ($cook->{login_name} eq $ui->{login_name}) {
@@ -3734,7 +3735,7 @@ EOD
             clusterDelete("/server/pub/hackdiet/RememberMe/$f.hdr");
         }
     }
-#print($fh "</pre>\n");    
+#print($fh "</pre>\n");
 
 
     print $fh <<"EOD";
@@ -3763,10 +3764,10 @@ EOD
     append_history($user_file_name, 18, $ndel);
 
     } elsif ($CGIargs{q} eq 'edit_account') {
-        
+
     my @goofs;
 
-    
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -3807,7 +3808,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -3861,10 +3862,10 @@ EOD
     }
 
     if ($#goofs >= 0) {
-        
+
     write_XHTML_prologue($fh, $homeBase, "Modify Account Settings", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, "Settings", undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -3950,7 +3951,7 @@ EOD
     }
 
     if (!$readOnly) {
-        
+
     my $settings_changed = '';
 
     $CGIargs{HDiet_height_cm} =~ s/,/./;
@@ -3982,7 +3983,7 @@ EOD
     $settings_changed =~ s/^,//;
     append_history($user_file_name, 8, $settings_changed);
 
-        
+
     if (defined($CGIargs{HDiet_height_cm})) {
         $CGIargs{HDiet_height_cm} =~ s/,/./g;
     }
@@ -4002,7 +4003,7 @@ EOD
         $ui->{password} = $CGIargs{HDiet_password};
     }
     $CGIargs{HDiet_dchar} = '.' if ($CGIargs{HDiet_dchar} !~ m/^[\.,]$/);
-    
+
     $ui->{first_name} = $CGIargs{HDiet_namef};
     $ui->{last_name} = $CGIargs{HDiet_namel};
     $ui->{middle_name} = $CGIargs{HDiet_namem};
@@ -4027,7 +4028,7 @@ EOD
         }
     }
 
-        
+
     open(FU, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     $ui->save(\*FU);
@@ -4038,7 +4039,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Account Settings Changed", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -4096,7 +4097,7 @@ EOD
     update_last_transaction($user_file_name);
 
     } elsif ($CGIargs{q} eq 'pwreset') {
-        
+
     my $qun = '';
     $qun = quoteHTML($CGIargs{HDiet_username}) if defined($CGIargs{HDiet_username});
 
@@ -4108,7 +4109,7 @@ EOD
 <div><input type="hidden" name="HDiet_tzoffset" id="tzoffset" value="unknown" /></div>
 EOD
 
-    
+
     if ($CGIargs{HDiet_handheld}) {
         print $fh <<"EOD";
 <div><input type="hidden" name="HDiet_handheld" value="y" /></div>
@@ -4148,7 +4149,7 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'new_password') {
-        
+
     #   If no user name given or the user clicked "Cancel" re-issue login form
     if (($CGIargs{HDiet_username} eq '') || $CGIargs{cancel}) {
         $CGIargs{q} = 'login';
@@ -4160,8 +4161,8 @@ EOD
     my $user_file_name = quoteUserName($CGIargs{HDiet_username});
     if (!(-f "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu")
         || (!open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu"))) {
-        
-    
+
+
     my @lt = localtime(time());
     my $ct = sprintf("%s %d %02d:%02d:%02d",
         MONTH_ABBREVIATIONS->[$lt[4]], $lt[3], $lt[2], $lt[1], $lt[0]);
@@ -4191,12 +4192,12 @@ EOD
     $ui->load(\*FU);
     close(FU);
 
-    
+
     if ($CGIargs{HDiet_email} ne $ui->{e_mail}) {
         write_XHTML_prologue($fh, $homeBase, "Incorrect E-mail Address", undef, $CGIargs{HDiet_handheld});
         my $arghandheld = $CGIargs{HDiet_handheld} ? '&amp;HDiet_handheld=y' : '';
         my $qun = quoteHTML($CGIargs{HDiet_username});
-        
+
         print $fh <<"EOD";
 <h1 class="c">Incorrect E-mail Address</h1>
 
@@ -4217,12 +4218,12 @@ EOD
    }
 
 
-    
+
     if ($ui->{read_only}) {
         write_XHTML_prologue($fh, $homeBase, "Password Reset Rejected", undef, $CGIargs{HDiet_handheld});
         my $arghandheld = $CGIargs{HDiet_handheld} ? '&amp;HDiet_handheld=y' : '';
         my $qun = quoteHTML($CGIargs{HDiet_username});
-        
+
         print $fh <<"EOD";
 <h1 class="c">Password Reset Rejected</h1>
 
@@ -4240,7 +4241,7 @@ EOD
    }
 
 
-    
+
     if ((!$readOnly) && (-f "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")
         && open(FS, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")) {
         my $asn = load_active_session(\*FS);
@@ -4255,7 +4256,7 @@ EOD
 
     $ui->resetPassword(8);
 
-    
+
     open(FU, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     $ui->save(\*FU);
@@ -4263,7 +4264,7 @@ EOD
     clusterCopy("/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
 
 
-    
+
     $ui->sendMail("Password reset",
 "Your password for The Hacker's Diet Online:
 
@@ -4281,7 +4282,7 @@ for a stranger to guess.
 \n");
 
 
-    
+
     write_XHTML_prologue($fh, $homeBase, "Password Reset and Mailed", undef, $CGIargs{HDiet_handheld});
     my ($qun, $qem) = (quoteHTML($ui->{login_name}), quoteHTML($ui->{e_mail}));
     print $fh <<"EOD";
@@ -4290,7 +4291,7 @@ for a stranger to guess.
 <div><input type="hidden" name="HDiet_tzoffset" id="tzoffset" value="unknown" /></div>
 EOD
 
-    
+
     if ($CGIargs{HDiet_handheld}) {
         print $fh <<"EOD";
 <div><input type="hidden" name="HDiet_handheld" value="y" /></div>
@@ -4335,8 +4336,8 @@ EOD
 
 
     } elsif ($CGIargs{q} eq 'log') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -4377,7 +4378,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -4409,7 +4410,7 @@ EOD
     }
 
 
-    
+
     if (defined($CGIargs{new_y}) && defined($CGIargs{new_m}) &&
         (!defined($CGIargs{m}))) {
         $CGIargs{m} = sprintf("%04d-%02d", $CGIargs{new_y}, $CGIargs{new_m});
@@ -4425,14 +4426,14 @@ EOD
     }
 
 
-    
-    
+
+
     if (!(($CGIargs{m} =~ m/^(\d\d\d\d)\-(\d\d)$/) &&
         ($1 >= 1980) && ($1 <= ((unix_time_to_civil_date_time($userTime))[0] + 1)) &&
         ($2 >= 1) && ($2 <= 12))) {
         if (!$inHTML) {
             if ($ENV{'REQUEST_METHOD'}) {
-                
+
     print($fh "Content-type: text/html\r\n\r\n");
 
             }
@@ -4479,7 +4480,7 @@ EOD
         $mlog->{last_modification_time} = 0;
         $mlog->{trend_carry_forward} = 0;
     }
-    
+
     if ($mlog->{trend_carry_forward} == 0) {
         my $cmon = sprintf("%04d-%02d", $mlog->{year}, $mlog->{month});
         my @logs = $ui->enumerateMonths();
@@ -4510,7 +4511,7 @@ EOD
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id},
         (($CGIargs{m} eq $nowmonth) ? "Log" : undef),
         'onclick="return leaveDocument();"', $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -4562,7 +4563,7 @@ EOD
     my $monochrome = defined($CGIargs{mono}) && $CGIargs{mono};
     my $printfix = ($printFriendly ? 'pr_' : '') . ($monochrome ? 'mo_' : '');
 
-    
+
     my $monthyear = $monthNames[$mlog->{month}] . " " . $mlog->{year};
 
     my ($lasty, $lastm) = $mlog->previousMonth();
@@ -4615,7 +4616,7 @@ EOD
               "</span> &nbsp; $snext_button</h1>\n");
 
 
-    
+
     my $mdays = $mlog->monthdays();
     my $fracf = $mlog->fractionFlagged();
     my $mbmi = $mlog->bodyMassIndex($ui->{height});
@@ -4629,12 +4630,12 @@ EOD
 
     my $iscale = $mlog->computeChartScale(640, 480, $ui->{display_unit}, \@dcalc);
 
-    
+
     my $cachebuster = sprintf("%x", (int(rand(65536))) & 0xFFFF);
     $cachebuster =~ tr/a-f/FGJKQW/;
 
 
-    
+
     my $mlw = $session->{handheld} ? 320 : 640;
     my $mlh = $session->{handheld} ? 240 : 480;
 
@@ -4658,11 +4659,11 @@ EOD
 
 EOD
 
-    
+
     my $tslope = 0;
     my $hist = HDiet::history->new($ui, $user_file_name);
     my ($ly, $lm, $ld, $ldu, $lw, $lt) = $hist->lastDay();
-        
+
 #print(STDERR "Last day: $ly-$lm-$ld  ($mlog->{year}-$mlog->{month})   Lw $lw   Lt $lt\n");
     if (defined($lw) &&
         ($mlog->{year} == $ly) &&
@@ -4671,9 +4672,9 @@ EOD
         my $l_jd = gregorian_to_jd($ly, $lm, $ld);
         my ($s_y, $s_m, $s_d) = $hist->firstDay();
         my $s_jd = gregorian_to_jd($s_y, $s_m, $s_d);
-        
+
         my (@intervals, @slopes);
-           
+
         if (($l_jd - $s_jd) > 1) {
             my ($f_y, $f_m, $f_d) = $hist->firstDayOfInterval($ly, $lm, $ld, 7);
             my $f_jd = gregorian_to_jd($f_y, $f_m, $f_d);
@@ -4682,7 +4683,7 @@ EOD
             @slopes = $hist->analyseTrend(@intervals);
             $tslope = $slopes[0];
         }
-    } else {   
+    } else {
 #print(STDERR "Computed trend the easy way for $ly-$lm-$ld\n");
         $tslope = $mlog->computeTrend();
         $tslope *= HDiet::monthlog::WEIGHT_CONVERSION->[$mlog->{log_unit}][$ui->{display_unit}];
@@ -4724,7 +4725,7 @@ EOD
         $ui->{display_unit}, $ui->{decimal_character}, $browse_public,
         $printFriendly, $monochrome);
 
-    
+
     if ($browse_public) {
         print $fh <<"EOD";
 </form>
@@ -4732,7 +4733,7 @@ EOD
     } else {
         my $ckprint = $CGIargs{print} ? ' checked="checked"' : '';
         my $ckmono = $CGIargs{mono} ? ' checked="checked"' : '';
-        
+
         print $fh <<"EOD";
 <p class="mlog_buttons">
 <input type="submit" value=" Update " />
@@ -4744,7 +4745,7 @@ EOD
 <label><input type="checkbox" name="mono" value="y"$ckmono  />&nbsp;Monochrome</label>
 EOD
 
-        
+
     if ($ui->{administrator} || $assumed_identity) {
         my $ckdl = $CGIargs{dumplog} ? ' checked="checked"' : '';
         my $ckdu = $CGIargs{dumpuser} ? ' checked="checked"' : '';
@@ -4766,7 +4767,7 @@ EOD
 EOD
     }
 
-    
+
     if ($ui->{administrator} || $assumed_identity) {
 
         sub describeHTML {
@@ -4807,8 +4808,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'update_log') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -4850,7 +4851,7 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -4882,14 +4883,14 @@ EOD
     }
 
 
-    
-    
+
+
     if (!(($CGIargs{m} =~ m/^(\d\d\d\d)\-(\d\d)$/) &&
         ($1 >= 1980) && ($1 <= ((unix_time_to_civil_date_time($userTime))[0] + 1)) &&
         ($2 >= 1) && ($2 <= 12))) {
         if (!$inHTML) {
             if ($ENV{'REQUEST_METHOD'}) {
-                
+
     print($fh "Content-type: text/html\r\n\r\n");
 
             }
@@ -4936,7 +4937,7 @@ EOD
         $mlog->{last_modification_time} = 0;
         $mlog->{trend_carry_forward} = 0;
     }
-    
+
     if ($mlog->{trend_carry_forward} == 0) {
         my $cmon = sprintf("%04d-%02d", $mlog->{year}, $mlog->{month});
         my @logs = $ui->enumerateMonths();
@@ -4964,7 +4965,7 @@ EOD
     my ($changes, $change_weight, $change_rung,
         $change_flag, $change_comment) = $mlog->updateFromCGI(\%CGIargs);
 
-    
+
     if (($changes > 0) && (!$readOnly)) {
         $mlog->{last_modification_time} = time();
         open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb") ||
@@ -4972,9 +4973,9 @@ EOD
         $mlog->save(\*FL);
         close(FL);
         clusterCopy("/server/pub/hackdiet/Users/$user_file_name/$CGIargs{m}.hdb");
-        
+
         if ($ui->{badge_trend} != 0) {
-            
+
     open(FB, ">/server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png") ||
         die("Cannot update monthly log file /server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png");
     my $hist = HDiet::history->new($ui, $user_file_name);
@@ -5012,10 +5013,10 @@ EOD
         next;
 
     } elsif ($CGIargs{q} eq 'calendar') {
-        
+
     my $calPerLine = 4;             # Calendars per line
 
-    
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -5056,7 +5057,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -5091,7 +5092,7 @@ EOD
     my $qun = quoteHTML($user_name);
     write_XHTML_prologue($fh, $homeBase, "Choose Monthly Log", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, "History", undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -5133,7 +5134,7 @@ EOD
 EOD
     }
 
-    
+
     $calPerLine = 1 if $session->{handheld};
 
     print $fh <<"EOD";
@@ -5145,7 +5146,7 @@ EOD
 
     my @years = $ui->enumerateYears();
 
-    
+
     for (my $y = 0; $y <= $#years; $y++) {
 
         if (!$intr) {
@@ -5207,7 +5208,7 @@ EOD
 EOD
 
     if (!$browse_public) {
-        
+
     print $fh <<"EOD";
 <form id="Hdiet_create_new_monthly_log" method="post" action="/cgi-bin/HackDiet">
 <div><input type="hidden" name="HDiet_tzoffset" id="tzoffset" value="unknown" /></div>
@@ -5250,8 +5251,8 @@ EOD
     update_last_transaction($user_file_name);
 
     } elsif ($CGIargs{q} eq 'trendan') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -5292,7 +5293,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -5328,7 +5329,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Trend Analysis", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, "Trend", undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -5372,12 +5373,12 @@ EOD
 
 
     if ($#years >= 0) {
-        
+
     print $fh <<"EOD";
 <h1 class="c">Trend Analysis</h1>
 EOD
 
-    
+
     my $hist = HDiet::history->new($ui, $user_file_name);
     my ($s_y, $s_m, $s_d) = $hist->firstDay();
     my $s_jd = gregorian_to_jd($s_y, $s_m, $s_d);
@@ -5385,7 +5386,7 @@ EOD
     my $l_jd = gregorian_to_jd($l_y, $l_m, $l_d);
 
 
-    
+
     my (@intervals, @dayspan);
     for my $interval (7, 14, -1, -3, -6, -12) {
         my ($f_y, $f_m, $f_d) = $hist->firstDayOfInterval($l_y, $l_m, $l_d, $interval);
@@ -5399,7 +5400,7 @@ EOD
     }
 
 
-    
+
     my $custom = $CGIargs{period} && ($CGIargs{period} eq 'c');
     my ($cust_start_y, $cust_start_m, $cust_start_d, $cust_start_jd,
         $cust_end_y, $cust_end_m, $cust_end_d,$cust_end_jd);
@@ -5449,7 +5450,7 @@ EOD
         push(@dayspan, ($cust_end_jd - $cust_start_jd) + 1);
     }
 
-    
+
     if ($#intervals >= 0) {
         my $wu = HDiet::monthlog::DELTA_WEIGHT_UNITS->[$ui->{display_unit}];
         my $eu = HDiet::monthlog::ENERGY_UNITS->[$ui->{energy_unit}];
@@ -5474,7 +5475,7 @@ EOD
         my @slopes = $hist->analyseTrend(@intervals);
         my @inames = ( 'Week', 'Fortnight', 'Month', 'Quarter', 'Six months', 'Year' );
 
-        
+
     for (my $i = 0; $i < (($#slopes + 1) / 4); $i++) {
         my $tslope = $slopes[$i * 4];
         my $deltaW = sprintf("%.2f", $tslope * 7);
@@ -5498,7 +5499,7 @@ EOD
         }
         $deltaW =~ s/\-/&minus;/;
         $deltaE =~ s/\-/&minus;/;
-        
+
         my $eMinWeight = HDiet::monthlog::editWeight($slopes[($i * 4) + 1],
             $ui->{display_unit}, $ui->{decimal_character});
         my $eMaxWeight = HDiet::monthlog::editWeight($slopes[($i * 4) + 2],
@@ -5506,7 +5507,7 @@ EOD
         my $eMeanWeight = HDiet::monthlog::editWeight($slopes[($i * 4) + 3],
             $ui->{display_unit}, $ui->{decimal_character});
 
-        
+
 #print(STDERR "Custom $custom $i $#slopes\n");
     if ($custom && ($i == (($#slopes + 1) / 4) - 1)) {
         print $fh <<"EOD";
@@ -5559,7 +5560,7 @@ EOD
     }
 
 
-    
+
 
     my %percheck = ( 'm', '', 'q', '', 'h', '', 'y', '', 'c', '' );
 
@@ -5621,12 +5622,12 @@ EOD
             $cs_selected[$i] = '';
         }
     }
-    
+
     my $ckprint = $CGIargs{print} ? ' checked="checked"' : '';
     my $ckmono = $CGIargs{mono} ? ' checked="checked"' : '';
 
 
-    
+
     print $fh <<"EOD";
 <form id="Hdiet_histchart" method="post" action="/cgi-bin/HackDiet">
 <div><input type="hidden" name="HDiet_tzoffset" id="tzoffset" value="unknown" /></div>
@@ -5634,7 +5635,7 @@ EOD
 <label><input type="checkbox" name="period" value="c"$percheck{c} />&nbsp;<b>Custom</b></label>
 EOD
 
-    
+
     my @f_mon;
     my $fmon;
     if (!$CGIargs{from_y}) {
@@ -5647,7 +5648,7 @@ EOD
     }
 
     print($fh "From\n");
-    
+
     my ($ysel, $msel, $dsel) = ("") x 3;
     if ("") {
         $ysel = ' onchange="change_from_y();"';
@@ -5659,7 +5660,7 @@ EOD
     <select name="from_y" id="from_y"$ysel>
 EOD
 
-    
+
     for (my $i = 0; $i <= $#years; $i++) {
         print $fh <<"EOD";
         <option$fy_selected[$i]>$years[$i]</option>
@@ -5672,7 +5673,7 @@ EOD
 EOD
 
     my $mid = "fm_";
-    
+
     for (my $i = 1; $i <= $#monthNames; $i++) {
         print $fh <<"EOD";
         <option id="$mid$i" value="$i"$fm_selected[$i]>$monthNames[$i]</option>
@@ -5694,7 +5695,7 @@ EOD
 
     if (1) {
         $did = "fd_";
-        
+
     for (my $i = 1; $i <= 31; $i++) {
         print $fh <<"EOD";
         <option id="$did$i"$fd_selected[$i]>$i</option>
@@ -5722,7 +5723,7 @@ EOD
     }
 
     print($fh "To\n");
-    
+
     ($ysel, $msel, $dsel) = ("") x 3;
     if ("") {
         $ysel = ' onchange="change_to_y();"';
@@ -5734,7 +5735,7 @@ EOD
 EOD
 
     @fy_selected = @ty_selected;
-    
+
     for (my $i = 0; $i <= $#years; $i++) {
         print $fh <<"EOD";
         <option$fy_selected[$i]>$years[$i]</option>
@@ -5748,7 +5749,7 @@ EOD
 
     $mid = "tm_";
     @fm_selected = @tm_selected;
-    
+
     for (my $i = 1; $i <= $#monthNames; $i++) {
         print $fh <<"EOD";
         <option id="$mid$i" value="$i"$fm_selected[$i]>$monthNames[$i]</option>
@@ -5769,7 +5770,7 @@ EOD
     if (1) {
         $did = "td_";
         @fd_selected = @td_selected;
-        
+
     for (my $i = 1; $i <= 31; $i++) {
         print $fh <<"EOD";
         <option id="$did$i"$fd_selected[$i]>$i</option>
@@ -5813,8 +5814,8 @@ EOD
     update_last_transaction($user_file_name) if !$readOnly;
 
     } elsif (($CGIargs{q} eq 'dietcalc') || ($CGIargs{q} eq 'update_dietcalc')) {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -5855,7 +5856,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -5890,7 +5891,7 @@ EOD
     write_XHTML_prologue($fh, $homeBase, "Diet Calculator", "loadDietCalcFields();", $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef,
         'onclick="return leaveDocument();"', $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -5933,7 +5934,7 @@ EOD
     }
 
 
-    
+
     my ($calc_calorie_balance, $calc_start_weight, $calc_goal_weight,
         $calc_weight_change, $calc_weight_week, $calc_weeks, $calc_months,, $calc_end_date,
         $calc_start_date, $plot_diet_plan, $calc_weight_unit, $calc_energy_unit) =
@@ -5945,7 +5946,7 @@ EOD
         $ui->{display_unit}, $ui->{energy_unit}
        );
 
-    
+
     if ($CGIargs{q} eq 'update_dietcalc') {
         if (defined($CGIargs{r_calc_energy_unit})) {
             $calc_energy_unit = $CGIargs{r_calc_energy_unit};
@@ -6021,7 +6022,7 @@ EOD
         $calc_goal_weight = $calc_start_weight - (($ui->{display_unit} == WEIGHT_KILOGRAM) ? 5 : 10);
     }
 
-    
+
 $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy_unit]) if $calc_calorie_balance == 0;
 
     $calc_weight_change = $calc_goal_weight - $calc_start_weight;
@@ -6031,7 +6032,7 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
     $calc_end_date = $calc_start_date + ($calc_weeks * 7.0 * 24.0 * 60.0 * 60.0);
 
     my @years;
-    
+
     my $cyear = (jd_to_gregorian(unix_time_to_jd($userTime)))[0];
     @years = $ui->enumerateYears();
     if ($#years < 0) {          # If no years in database, include current year
@@ -6049,10 +6050,10 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
 
     my @goofs;
     if ($CGIargs{q} eq 'update_dietcalc') {
-        
+
     my $nschanges = 0;
 
-    
+
     if ($CGIargs{calc_energy_unit} ne $CGIargs{r_calc_energy_unit}) {
         $calc_energy_unit = $CGIargs{calc_energy_unit};
         $calc_calorie_balance = round($calc_calorie_balance *
@@ -6062,7 +6063,7 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
         $nschanges++;
     }
 
-    
+
     if ($CGIargs{calc_calorie_balance} ne $CGIargs{r_calc_calorie_balance}) {
         if ($CGIargs{calc_calorie_balance} =~ m/^\s*([\+\-]?\d+([\.,]\d*)?)\s*$/) {
             $calc_calorie_balance = $1;
@@ -6075,7 +6076,7 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
     }
 
 
-    
+
     if ($CGIargs{calc_weight_unit} ne $CGIargs{r_calc_weight_unit}) {
         $calc_weight_unit = $CGIargs{calc_weight_unit};
         $calc_start_weight *= HDiet::monthlog::WEIGHT_CONVERSION->[$CGIargs{r_calc_weight_unit}][$CGIargs{calc_weight_unit}];
@@ -6085,7 +6086,7 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
         $nschanges++;
     }
 
-    
+
     if ($CGIargs{calc_start_weight} ne $CGIargs{r_calc_start_weight}) {
         my $w = parseWeight($CGIargs{calc_start_weight}, $calc_weight_unit);
         if (defined($w)) {
@@ -6097,7 +6098,7 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
     }
 
 
-    
+
     if ($CGIargs{calc_goal_weight} ne $CGIargs{r_calc_goal_weight}) {
         my $w = parseWeight($CGIargs{calc_goal_weight}, $calc_weight_unit);
         if (defined($w)) {
@@ -6109,7 +6110,7 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
     }
 
 
-    
+
     if ($CGIargs{calc_weight_change} ne $CGIargs{r_calc_weight_change}) {
         my $w = parseSignedWeight($CGIargs{calc_weight_change}, $calc_weight_unit);
         if (defined($w)) {
@@ -6121,7 +6122,7 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
     }
 
 
-    
+
     if ($CGIargs{calc_weight_week} ne $CGIargs{r_calc_weight_week}) {
         my $w = parseSignedWeight($CGIargs{calc_weight_week}, $calc_weight_unit);
         if (defined($w)) {
@@ -6134,7 +6135,7 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
     }
 
 
-    
+
     if ($CGIargs{calc_weeks} ne $CGIargs{r_calc_weeks}) {
         my $ddw = -1;
         if ($CGIargs{calc_weeks} =~ m/^\s*(\d+)\s*$/) {
@@ -6151,7 +6152,7 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
         $nschanges++;
     }
 
-    
+
     if ($CGIargs{calc_months} ne $CGIargs{r_calc_months}) {
         my $ddm = -1;
         if ($CGIargs{calc_months} =~ m/^\s*(\d+)\s*$/) {
@@ -6169,7 +6170,7 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
     }
 
 
-    
+
     if (gregorian_to_jd($CGIargs{from_y}, $CGIargs{from_m}, $CGIargs{from_d}) !=
             $CGIargs{r_calc_start_date}) {
         $calc_start_date = jd_to_unix_time(gregorian_to_jd($CGIargs{from_y}, $CGIargs{from_m}, $CGIargs{from_d}));
@@ -6177,7 +6178,7 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
     }
 
 
-    
+
     if (gregorian_to_jd($CGIargs{to_y}, $CGIargs{to_m}, $CGIargs{to_d}) !=
             $CGIargs{r_calc_end_date}) {
         my $ed = jd_to_unix_time(gregorian_to_jd($CGIargs{to_y}, $CGIargs{to_m}, $CGIargs{to_d}));
@@ -6194,7 +6195,7 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
 
 
     if ($nschanges > 0) {
-        
+
 $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy_unit]) if $calc_calorie_balance == 0;
 
     $calc_weight_change = $calc_goal_weight - $calc_start_weight;
@@ -6203,7 +6204,7 @@ $calc_calorie_balance = (-500 * ENERGY_CONVERSION->[ENERGY_CALORIE][$calc_energy
     $calc_months = round(((($calc_weight_change / $calc_weight_week) * 7.0) / 30.44));
     $calc_end_date = $calc_start_date + ($calc_weeks * 7.0 * 24.0 * 60.0 * 60.0);
 
-        
+
     my $cyear = (jd_to_gregorian(unix_time_to_jd($userTime)))[0];
     @years = $ui->enumerateYears();
     if ($#years < 0) {          # If no years in database, include current year
@@ -6228,7 +6229,7 @@ This may result in unintended changes.  Please press the
 
     }
 
-    
+
     #   Preset start date selection fields
     my $s_jd = unix_time_to_jd($calc_start_date);
     ($CGIargs{from_y}, $CGIargs{from_m}, $CGIargs{from_d}) = jd_to_gregorian($s_jd);
@@ -6237,7 +6238,7 @@ This may result in unintended changes.  Please press the
     my $e_jd = unix_time_to_jd($calc_end_date);
     ($CGIargs{to_y}, $CGIargs{to_m}, $CGIargs{to_d}) = jd_to_gregorian($e_jd);
 
-    
+
 
     my %percheck = ( 'm', '', 'q', '', 'h', '', 'y', '', 'c', '' );
 
@@ -6299,7 +6300,7 @@ This may result in unintended changes.  Please press the
             $cs_selected[$i] = '';
         }
     }
-    
+
     my $ckprint = $CGIargs{print} ? ' checked="checked"' : '';
     my $ckmono = $CGIargs{mono} ? ' checked="checked"' : '';
 
@@ -6441,7 +6442,7 @@ EOD
         <td>
 EOD
 
-    
+
     my ($ysel, $msel, $dsel) = ("") x 3;
     if ("1") {
         $ysel = ' onchange="change_from_y();"';
@@ -6453,7 +6454,7 @@ EOD
     <select name="from_y" id="from_y"$ysel>
 EOD
 
-    
+
     for (my $i = 0; $i <= $#years; $i++) {
         print $fh <<"EOD";
         <option$fy_selected[$i]>$years[$i]</option>
@@ -6466,7 +6467,7 @@ EOD
 EOD
 
     my $mid = "fm_";
-    
+
     for (my $i = 1; $i <= $#monthNames; $i++) {
         print $fh <<"EOD";
         <option id="$mid$i" value="$i"$fm_selected[$i]>$monthNames[$i]</option>
@@ -6488,7 +6489,7 @@ EOD
 
     if (1) {
         $did = "fd_";
-        
+
     for (my $i = 1; $i <= 31; $i++) {
         print $fh <<"EOD";
         <option id="$did$i"$fd_selected[$i]>$i</option>
@@ -6514,7 +6515,7 @@ EOD
             <span id="end_date" style="display: $disped;">
 EOD
 
-    
+
     ($ysel, $msel, $dsel) = ("") x 3;
     if ("1") {
         $ysel = ' onchange="change_to_y();"';
@@ -6526,7 +6527,7 @@ EOD
 EOD
 
     @fy_selected = @ty_selected;
-    
+
     for (my $i = 0; $i <= $#years; $i++) {
         print $fh <<"EOD";
         <option$fy_selected[$i]>$years[$i]</option>
@@ -6540,7 +6541,7 @@ EOD
 
     $mid = "tm_";
     @fm_selected = @tm_selected;
-    
+
     for (my $i = 1; $i <= $#monthNames; $i++) {
         print $fh <<"EOD";
         <option id="$mid$i" value="$i"$fm_selected[$i]>$monthNames[$i]</option>
@@ -6561,7 +6562,7 @@ EOD
     if (1) {
         $did = "td_";
         @fd_selected = @td_selected;
-        
+
     for (my $i = 1; $i <= 31; $i++) {
         print $fh <<"EOD";
         <option id="$did$i"$fd_selected[$i]>$i</option>
@@ -6631,8 +6632,8 @@ EOD
     update_last_transaction($user_file_name) if !$readOnly;
 
     } elsif ($CGIargs{q} eq 'save_dietcalc') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -6673,7 +6674,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -6734,7 +6735,7 @@ EOD
     $ui->{plot_diet_plan} = defined($CGIargs{plot_plan}) ? 1 : 0;
 
     if (!$readOnly) {
-        
+
     open(FU, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     $ui->save(\*FU);
@@ -6748,8 +6749,8 @@ EOD
     next;
 
     } elsif ($CGIargs{q} eq 'histreq') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -6790,7 +6791,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -6826,7 +6827,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Chart Workshop", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, "Chart", undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -6870,12 +6871,12 @@ EOD
 
 
     if ($#years >= 0) {
-        
+
     print $fh <<"EOD";
 <h1 class="c">Chart Workshop</h1>
 EOD
 
-    
+
     my $hist = HDiet::history->new($ui, $user_file_name);
     my ($s_y, $s_m, $s_d) = $hist->firstDay();
     my $s_jd = gregorian_to_jd($s_y, $s_m, $s_d);
@@ -6883,7 +6884,7 @@ EOD
     my $l_jd = gregorian_to_jd($l_y, $l_m, $l_d);
 
 
-    
+
     my $custom = $CGIargs{period} && ($CGIargs{period} eq 'c');
     my ($cust_start_y, $cust_start_m, $cust_start_d, $cust_start_jd,
         $cust_end_y, $cust_end_m, $cust_end_d,$cust_end_jd);
@@ -6927,9 +6928,9 @@ EOD
     }
 
 
-    
+
     my ($chart_w, $chart_h) = (800, 600);
-    
+
     ($chart_w, $chart_h) = (320, 240) if $session->{handheld};
 
     if (defined($CGIargs{size})) {
@@ -6942,7 +6943,7 @@ EOD
 
     my $chart_args = "width=$chart_w&amp;height=$chart_h";
 
-    
+
     my ($start_y, $start_m, $start_d, $end_y, $end_m, $end_d);
 
     my $period = $CGIargs{period};
@@ -6980,12 +6981,12 @@ EOD
 #    my ($start_y, $start_m, $start_d) = ($CGIargs{from_y}, $CGIargs{from_m}, $CGIargs{from_d});
 #    my ($end_y, $end_m, $end_d) = ($CGIargs{to_y}, $CGIargs{to_m}, $CGIargs{to_d});
     $chart_args .= "&amp;start=$start_y-$start_m-$start_d&amp;end=$end_y-$end_m-$end_d";
-    
+
     my $modeArgs = '';
     $modeArgs .= '&amp;print=y' if $CGIargs{print};
     $modeArgs .= '&amp;mono=y' if $CGIargs{mono};
 
-    
+
     my $cachebuster = sprintf("%x", (int(rand(65536))) & 0xFFFF);
     $cachebuster =~ tr/a-f/FGJKQW/;
 
@@ -6998,7 +6999,7 @@ EOD
 EOD
 
 
-    
+
 
     my %percheck = ( 'm', '', 'q', '', 'h', '', 'y', '', 'c', '' );
 
@@ -7060,7 +7061,7 @@ EOD
             $cs_selected[$i] = '';
         }
     }
-    
+
     my $ckprint = $CGIargs{print} ? ' checked="checked"' : '';
     my $ckmono = $CGIargs{mono} ? ' checked="checked"' : '';
 
@@ -7078,12 +7079,12 @@ EOD
     <br />
 EOD
 
-    
+
     print $fh <<"EOD";
 <label><input type="radio" name="period" value="c"$percheck{c} />&nbsp;<b>Custom</b></label>
 EOD
 
-    
+
     my @f_mon;
     my $fmon;
     if (!$CGIargs{from_y}) {
@@ -7096,7 +7097,7 @@ EOD
     }
 
     print($fh "From\n");
-    
+
     my ($ysel, $msel, $dsel) = ("") x 3;
     if ("") {
         $ysel = ' onchange="change_from_y();"';
@@ -7108,7 +7109,7 @@ EOD
     <select name="from_y" id="from_y"$ysel>
 EOD
 
-    
+
     for (my $i = 0; $i <= $#years; $i++) {
         print $fh <<"EOD";
         <option$fy_selected[$i]>$years[$i]</option>
@@ -7121,7 +7122,7 @@ EOD
 EOD
 
     my $mid = "fm_";
-    
+
     for (my $i = 1; $i <= $#monthNames; $i++) {
         print $fh <<"EOD";
         <option id="$mid$i" value="$i"$fm_selected[$i]>$monthNames[$i]</option>
@@ -7143,7 +7144,7 @@ EOD
 
     if (1) {
         $did = "fd_";
-        
+
     for (my $i = 1; $i <= 31; $i++) {
         print $fh <<"EOD";
         <option id="$did$i"$fd_selected[$i]>$i</option>
@@ -7171,7 +7172,7 @@ EOD
     }
 
     print($fh "To\n");
-    
+
     ($ysel, $msel, $dsel) = ("") x 3;
     if ("") {
         $ysel = ' onchange="change_to_y();"';
@@ -7183,7 +7184,7 @@ EOD
 EOD
 
     @fy_selected = @ty_selected;
-    
+
     for (my $i = 0; $i <= $#years; $i++) {
         print $fh <<"EOD";
         <option$fy_selected[$i]>$years[$i]</option>
@@ -7197,7 +7198,7 @@ EOD
 
     $mid = "tm_";
     @fm_selected = @tm_selected;
-    
+
     for (my $i = 1; $i <= $#monthNames; $i++) {
         print $fh <<"EOD";
         <option id="$mid$i" value="$i"$fm_selected[$i]>$monthNames[$i]</option>
@@ -7218,7 +7219,7 @@ EOD
     if (1) {
         $did = "td_";
         @fd_selected = @td_selected;
-        
+
     for (my $i = 1; $i <= 31; $i++) {
         print $fh <<"EOD";
         <option id="$did$i"$fd_selected[$i]>$i</option>
@@ -7240,7 +7241,7 @@ EOD
 <b><label for="size">Chart size:</label></b>&nbsp;<select name="size" id="size">
 EOD
 
-    
+
     for (my $i = 0; $i <= $#chartSizes; $i++) {
         my $cs = $chartSizes[$i];
         $cs =~ s/x/&times;/;
@@ -7277,8 +7278,8 @@ EOD
     update_last_transaction($user_file_name);
 
     } elsif ($CGIargs{q} eq 'importcsv') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -7319,7 +7320,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -7353,7 +7354,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Import CSV or XML Database", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -7418,7 +7419,7 @@ check the &ldquo;Allow overwrite&rdquo; box in the import request.
 
 <div>
 
-    
+
 <fieldset id="Hdiet_CSV_upload_fs"><legend>Import CSV or XML by File Upload</legend>
 <form id="Hdiet_CSV_upload" enctype="multipart/form-data"
     method="post" action="/cgi-bin/HackDiet?enc=raw$tzOff">
@@ -7444,7 +7445,7 @@ Select the file you wish to upload and import.
 
 <br />
 
-    
+
 <fieldset class="front" id="Hdiet_CSV_submit_fs"><legend>Import Pasted CSV or XML Log Entries</legend>
 <form id="Hdiet_CSV_submit" enctype="multipart/form-data"
     method="post" action="/cgi-bin/HackDiet">
@@ -7474,8 +7475,8 @@ EOD
     update_last_transaction($user_file_name);
 
     } elsif ($CGIargs{q} eq 'csv_import_data') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -7516,7 +7517,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -7550,7 +7551,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Database Imported", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -7631,7 +7632,7 @@ EOD
     }
 
     if ($CGIargs{file} =~ m/\s*<\?xml\s+/) {
-        
+
     my $parser = XML::LibXML->new();
     my $doc = $parser->parse_string($CGIargs{file});
     my $root = $doc->getDocumentElement();
@@ -7680,13 +7681,13 @@ EOD
 
         if (($elem->nodeType() == ELEMENT_NODE) &&
             ($elem->nodeName() eq 'day')) {
-            
+
     #   Sanity check date before proceeding
     if (($logYear >= 1980) &&  ($logYear <= ((unix_time_to_civil_date_time($userTime))[0]))) {
 
         my $monkey = sprintf("%04d-%02d", $logYear, $logMonth);
         my ($yy, $mm) = ($logYear, $logMonth);
-        
+
     my $mlog;
 
     if (defined($mondb{$monkey})) {
@@ -7750,7 +7751,7 @@ EOD
     }
 
     } else {
-        
+
     while ($CGIargs{file} =~ s/^([^\n]*\r?\n)//s) {
         $n++;
 
@@ -7764,7 +7765,7 @@ EOD
             $imp = 0;
             $over = 0;
 
-            
+
     my $excelCSVdebug = 0;
     if ($listline =~ m/^Date,,Weight,Trend,Variance,,Rung,Flag$/) {
         $logFormat = 'Excel';
@@ -7796,7 +7797,7 @@ EOD
             #   See if the first field is something we can interpret plausibly as a date
             $f[0] =~ m/^(\d+)([\/\-\.])(\d+)([\/\-\.])(\d+)$/;
             if ($2 eq $4) {
-                
+
     my ($yy, $mm, $dd);
     if ($2 eq '-') {            # YYYY-MM-DD
         $yy = $1 + 0;
@@ -7826,7 +7827,7 @@ EOD
                 if (($yy >= 1980) &&  ($yy <= ((unix_time_to_civil_date_time($userTime))[0]))) {
                     my $monkey = sprintf("%04d-%02d", $yy, $mm);
 
-                    
+
     my $mlog;
 
     if (defined($mondb{$monkey})) {
@@ -7858,7 +7859,7 @@ EOD
                         $already++;
                         $over = 1;
                     } else {
-                        
+
     my $cmt = '';
     if ($f[2] !~ m/^[\d\.]+$/) {
         $cmt = $f[2];
@@ -7888,7 +7889,7 @@ EOD
 
 
             if (!($imp || $over)) {
-                
+
     if ($listline =~ m/^Date,Weight,Rung,Flag,Comment$/) {
         $logFormat = 'HDRead';
     } elsif (($logFormat eq 'HDRead') &&
@@ -7923,7 +7924,7 @@ EOD
 
                 my $monkey = sprintf("%04d-%02d", $yy, $mm);
 
-                
+
     my $mlog;
 
     if (defined($mondb{$monkey})) {
@@ -7954,7 +7955,7 @@ EOD
                     $listStyle = 'conflict';
                     $already++;
                 } else {
-                    
+
     if ($hdOnlineLog) {
         if ($mlog->importCSV($listline)) {
             $monchanges{$monkey}++;
@@ -8002,7 +8003,7 @@ EOD
 
     }
 
-    
+
     my $md;
     if (!$readOnly) {
         foreach $md (sort(keys(%mondb))) {
@@ -8024,7 +8025,7 @@ EOD
 EOD
     }
 
-    
+
     print($fh "<p>\n
 Records submitted: $n.<br />\n
 Log items imported: $imported.<br />\n");
@@ -8053,8 +8054,8 @@ Log items imported: $imported.<br />\n");
     }
 
     } elsif ($CGIargs{q} eq 'exportdb') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -8095,7 +8096,7 @@ Log items imported: $imported.<br />\n");
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -8129,7 +8130,7 @@ Log items imported: $imported.<br />\n");
 
     my @years = $ui->enumerateYears();
 
-    
+
 
     my %percheck = ( 'm', '', 'q', '', 'h', '', 'y', '', 'c', '' );
 
@@ -8191,14 +8192,14 @@ Log items imported: $imported.<br />\n");
             $cs_selected[$i] = '';
         }
     }
-    
+
     my $ckprint = $CGIargs{print} ? ' checked="checked"' : '';
     my $ckmono = $CGIargs{mono} ? ' checked="checked"' : '';
 
 
     write_XHTML_prologue($fh, $homeBase, "Export Log Database", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -8271,7 +8272,7 @@ EOD
     $fm_selected[$fmon] = ' selected="selected"';
 
     print($fh "From\n");
-    
+
     my ($ysel, $msel, $dsel) = ("") x 3;
     if ("") {
         $ysel = ' onchange="change_from_y();"';
@@ -8283,7 +8284,7 @@ EOD
     <select name="from_y" id="from_y"$ysel>
 EOD
 
-    
+
     for (my $i = 0; $i <= $#years; $i++) {
         print $fh <<"EOD";
         <option$fy_selected[$i]>$years[$i]</option>
@@ -8296,7 +8297,7 @@ EOD
 EOD
 
     my $mid = "fm_";
-    
+
     for (my $i = 1; $i <= $#monthNames; $i++) {
         print $fh <<"EOD";
         <option id="$mid$i" value="$i"$fm_selected[$i]>$monthNames[$i]</option>
@@ -8318,7 +8319,7 @@ EOD
 
     if (0) {
         $did = "fd_";
-        
+
     for (my $i = 1; $i <= 31; $i++) {
         print $fh <<"EOD";
         <option id="$did$i"$fd_selected[$i]>$i</option>
@@ -8343,7 +8344,7 @@ EOD
     $tm_selected[$fmon] = ' selected="selected"';
 
     print($fh "To\n");
-    
+
     ($ysel, $msel, $dsel) = ("") x 3;
     if ("") {
         $ysel = ' onchange="change_to_y();"';
@@ -8355,7 +8356,7 @@ EOD
 EOD
 
     @fy_selected = @ty_selected;
-    
+
     for (my $i = 0; $i <= $#years; $i++) {
         print $fh <<"EOD";
         <option$fy_selected[$i]>$years[$i]</option>
@@ -8369,7 +8370,7 @@ EOD
 
     $mid = "tm_";
     @fm_selected = @tm_selected;
-    
+
     for (my $i = 1; $i <= $#monthNames; $i++) {
         print $fh <<"EOD";
         <option id="$mid$i" value="$i"$fm_selected[$i]>$monthNames[$i]</option>
@@ -8390,7 +8391,7 @@ EOD
     if (0) {
         $did = "td_";
         @fd_selected = @td_selected;
-        
+
     for (my $i = 1; $i <= 31; $i++) {
         print $fh <<"EOD";
         <option id="$did$i"$fd_selected[$i]>$i</option>
@@ -8421,8 +8422,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'browsepub') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -8463,7 +8464,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -8494,7 +8495,7 @@ EOD
         }
     }
 
-    
+
     if ($readOnly) {
         my $qun = quoteUserName($real_user_name);
         die("Invalid \"$CGIargs{q}\" transaction attempted by read-only account $qun");
@@ -8502,7 +8503,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Browse Public Accounts", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -8544,10 +8545,10 @@ EOD
 EOD
     }
 
-    
+
     my $acct_category = $CGIargs{acct_category};
 
-    
+
     my %accounts;
 
     opendir(CD, "/server/pub/hackdiet/Pubname") ||
@@ -8621,24 +8622,24 @@ EOD
 
     my $accts_displayed = 0;
 
-    
+
     if (!defined($acct_category)) {
         $acct_category = 'active';
     }
-    
+
     for my $n (sort(keys(%accounts))) {
         my $qn = quoteHTML($n);
         my $qun = quoteUserName($accounts{$n});
-        
+
         if ($acct_category ne 'all') {
             my $lti = time() - last_transaction_time($qun);
             my $month = 30 * 24 * 60 * 60;
             if ((($acct_category eq 'active') && ($lti > $month)) ||
                 (($acct_category eq 'inactive') && ($lti < $month))) {
                 next;
-            }       
+            }
         }
-        
+
         open(FU, "<:utf8", "/server/pub/hackdiet/Users/$qun/UserAccount.hdu") ||
             next;
         my $ui = HDiet::user->new();
@@ -8690,8 +8691,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'do_public_browseacct') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -8732,7 +8733,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -8763,7 +8764,7 @@ EOD
         }
     }
 
-    
+
     if ($readOnly) {
         my $qun = quoteUserName($real_user_name);
         die("Invalid \"$CGIargs{q}\" transaction attempted by read-only account $qun");
@@ -8772,7 +8773,7 @@ EOD
     if (!defined($CGIargs{pubacct})) {
         write_XHTML_prologue($fh, $homeBase, "Invalid Access Request", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -8829,13 +8830,13 @@ EOD
         exit(0);
     }
 
-    
+
     my $pn = HDiet::pubname->new();
     if (!defined($pn->findPublicName($CGIargs{pubacct}))) {
         my $qn = quoteHTML($CGIargs{pubacct});
         write_XHTML_prologue($fh, $homeBase, "Invalid Access Request", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -8905,8 +8906,8 @@ EOD
     next;
 
     } elsif ($CGIargs{q} eq 'quitbrowse') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -8947,7 +8948,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -8991,8 +8992,8 @@ EOD
     next;
 
     } elsif ($CGIargs{q} eq 'configure_badge') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -9034,7 +9035,7 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -9068,7 +9069,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Configure Web Page Status Badge", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -9110,7 +9111,7 @@ EOD
 EOD
     }
 
-    
+
     my @cterm;
     $cterm[0] = $cterm[7] = $cterm[14] = $cterm[1] = $cterm[3] = $cterm[6] = $cterm[12] = '';
     $cterm[abs($ui->{badge_trend})] = ' selected="selected"';
@@ -9180,8 +9181,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'paper_logs') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -9222,7 +9223,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -9256,7 +9257,7 @@ EOD
 
     my @years;
 
-    
+
 
     my %percheck = ( 'm', '', 'q', '', 'h', '', 'y', '', 'c', '' );
 
@@ -9318,14 +9319,14 @@ EOD
             $cs_selected[$i] = '';
         }
     }
-    
+
     my $ckprint = $CGIargs{print} ? ' checked="checked"' : '';
     my $ckmono = $CGIargs{mono} ? ' checked="checked"' : '';
 
 
     write_XHTML_prologue($fh, $homeBase, "Generate Log Forms", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -9383,7 +9384,7 @@ EOD
     my $jdnow = unix_time_to_jd(time());
     my ($enowy, $enowm, $enowd) = jd_to_gregorian($jdnow);
     my @f_mon;
-    
+
     for (my $y = $enowy - 1; $y <= $enowy + 1; $y++) {
         $fy_selected[$y - ($enowy - 1)] = $ty_selected[$y - ($enowy - 1)] = '';
         $years[$y - ($enowy - 1)] = $y;
@@ -9393,9 +9394,9 @@ EOD
     }
     $fy_selected[1] = ' selected="selected"';
     $fm_selected[1] = ' selected="selected"';
-    
+
     print($fh "From\n");
-    
+
     my ($ysel, $msel, $dsel) = ("") x 3;
     if ("") {
         $ysel = ' onchange="change_from_y();"';
@@ -9407,7 +9408,7 @@ EOD
     <select name="from_y" id="from_y"$ysel>
 EOD
 
-    
+
     for (my $i = 0; $i <= $#years; $i++) {
         print $fh <<"EOD";
         <option$fy_selected[$i]>$years[$i]</option>
@@ -9420,7 +9421,7 @@ EOD
 EOD
 
     my $mid = "fm_";
-    
+
     for (my $i = 1; $i <= $#monthNames; $i++) {
         print $fh <<"EOD";
         <option id="$mid$i" value="$i"$fm_selected[$i]>$monthNames[$i]</option>
@@ -9442,7 +9443,7 @@ EOD
 
     if (0) {
         $did = "fd_";
-        
+
     for (my $i = 1; $i <= 31; $i++) {
         print $fh <<"EOD";
         <option id="$did$i"$fd_selected[$i]>$i</option>
@@ -9464,7 +9465,7 @@ EOD
     $tm_selected[12] = ' selected="selected"';
 
     print($fh "To\n");
-    
+
     ($ysel, $msel, $dsel) = ("") x 3;
     if ("") {
         $ysel = ' onchange="change_to_y();"';
@@ -9476,7 +9477,7 @@ EOD
 EOD
 
     @fy_selected = @ty_selected;
-    
+
     for (my $i = 0; $i <= $#years; $i++) {
         print $fh <<"EOD";
         <option$fy_selected[$i]>$years[$i]</option>
@@ -9490,7 +9491,7 @@ EOD
 
     $mid = "tm_";
     @fm_selected = @tm_selected;
-    
+
     for (my $i = 1; $i <= $#monthNames; $i++) {
         print $fh <<"EOD";
         <option id="$mid$i" value="$i"$fm_selected[$i]>$monthNames[$i]</option>
@@ -9511,7 +9512,7 @@ EOD
     if (0) {
         $did = "td_";
         @fd_selected = @td_selected;
-        
+
     for (my $i = 1; $i <= 31; $i++) {
         print $fh <<"EOD";
         <option id="$did$i"$fd_selected[$i]>$i</option>
@@ -9551,8 +9552,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'do_paper_logs') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -9593,7 +9594,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -9627,7 +9628,7 @@ EOD
 
     my @years;
 
-    
+
 
     my %percheck = ( 'm', '', 'q', '', 'h', '', 'y', '', 'c', '' );
 
@@ -9689,14 +9690,14 @@ EOD
             $cs_selected[$i] = '';
         }
     }
-    
+
     my $ckprint = $CGIargs{print} ? ' checked="checked"' : '';
     my $ckmono = $CGIargs{mono} ? ' checked="checked"' : '';
 
 
     write_XHTML_prologue($fh, $homeBase, "Weight and Exercise Log",
         " if (window.print) { setTimeout('window.print()', 1000); }", $session->{handheld}, 1);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -9738,7 +9739,7 @@ EOD
 EOD
     }
 
-    
+
     #   If start and end dates are reversed, sliently exchange them.
     if (gregorian_to_jd($CGIargs{from_y}, $CGIargs{from_m}, 1) >
         gregorian_to_jd($CGIargs{to_y}, $CGIargs{to_m}, 1)) {
@@ -9750,10 +9751,10 @@ EOD
     my $firstpage = 1;
     for (my $y = $CGIargs{from_y}; $y <= $CGIargs{to_y}; $y++) {
         for (my $m = $CGIargs{from_m}; $m <= $CGIargs{to_m}; ) {
-            
+
     my $plc = $firstpage ? 'plog_first' : 'plog_subsequent';
     $firstpage = 0;
-    my $mdays = HDiet::monthlog::monthdays($y, $m);    
+    my $mdays = HDiet::monthlog::monthdays($y, $m);
 
     print $fh <<"EOD";
 <div class="$plc">
@@ -9814,8 +9815,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'update_badge') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -9857,7 +9858,7 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -9891,7 +9892,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Web Page Status Badge Configuration Changed", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -9933,26 +9934,26 @@ EOD
 EOD
     }
 
-        
+
     $CGIargs{badge_term} = '0' if !defined($CGIargs{badge_term});
-    
+
     $ui->{badge_trend} = $CGIargs{badge_term};
-    
+
     my %valid_term = ( 0, 1, 7, 1, 14, 1, -1, 1, -3, 1, -6, 1, -12, 1 );
     if (!defined($valid_term{$ui->{badge_trend}})) {
         $ui->{badge_trend} = 0;
     }
-    
-    
+
+
     open(FU, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     $ui->save(\*FU);
     close(FU);
     clusterCopy("/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
 
-    
+
     if ($ui->{badge_trend} != 0) {
-        
+
     open(FB, ">/server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png") ||
         die("Cannot update monthly log file /server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png");
     my $hist = HDiet::history->new($ui, $user_file_name);
@@ -9992,9 +9993,9 @@ EOD
         $cterm[6]  = 'six months';
         $cterm[12] = 'year';
         my $ct = $cterm[abs($ui->{badge_trend})];
-        
+
         my $uec = $ui->generateEncryptedUserID();
-       
+
         print $fh <<"EOD";
 <p class="justified">
 You have enabled Web page status badge generation with the
@@ -10039,8 +10040,8 @@ EOD
     }
 
     } elsif ($CGIargs{q} eq 'update_trend') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -10082,7 +10083,7 @@ EOD
     my $user_file_name = quoteUserName($user_name);
 
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -10121,13 +10122,13 @@ EOD
     }
 
     if ($CGIargs{m} ne '0000-00') {
-        
+
     if (!(($CGIargs{m} =~ m/^(\d\d\d\d)\-(\d\d)$/) &&
         ($1 >= 1980) && ($1 <= ((unix_time_to_civil_date_time($userTime))[0] + 1)) &&
         ($2 >= 1) && ($2 <= 12))) {
         if (!$inHTML) {
             if ($ENV{'REQUEST_METHOD'}) {
-                
+
     print($fh "Content-type: text/html\r\n\r\n");
 
             }
@@ -10161,7 +10162,7 @@ EOD
 
 write_XHTML_prologue($fh, $homeBase, "Recompute trend carry-forward", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -10220,8 +10221,8 @@ write_XHTML_epilogue($fh, $homeBase);
     }
 
     } elsif ($CGIargs{q} eq 'feedback') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -10262,7 +10263,7 @@ write_XHTML_epilogue($fh, $homeBase);
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -10296,7 +10297,7 @@ write_XHTML_epilogue($fh, $homeBase);
 
     write_XHTML_prologue($fh, $homeBase, "Send Feedback", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -10346,7 +10347,7 @@ EOD
     my ($subject, $category, $message, $from) = ('') x 4;
     my @feedsel;
     if (defined($CGIargs{message})) {
-        
+
     ($subject, $category, $message, $from) =
             ($CGIargs{subject},
              $feedback_categories[$CGIargs{category}],
@@ -10358,7 +10359,7 @@ EOD
     $message =~ s/\r\n/\n/g;
     $message =~ s/\n\.\n/\n\. \n/g;
 
-    
+
     my $pt = $CGIargs{message};
     $pt =~ s/\r\n/\n/g;
     my $t = $pt;
@@ -10390,7 +10391,7 @@ EOD
 
     $feedsel[$CGIargs{category}] = 1;
 
-    
+
     my $spell = 1;          # We may make this optional some day
     my $spellCmd = 'aspell list --encoding=utf-8 --mode=none | sort -u';
     if ($spell && ($spellCmd ne '')) {
@@ -10432,7 +10433,7 @@ EOD
 
     }
 
-    
+
     $feedsel[$CGIargs{category}] = 1 if defined($CGIargs{category});
     my $ckcopy = defined($CGIargs{copy_sender}) ? ' checked="checked"' : '';
     my $qun = quoteHTML($user_name);
@@ -10454,7 +10455,7 @@ EOD
 </tr>
 EOD
 
-    
+
     print $fh <<"EOD";
 <tr>
 <th>Category:</th>
@@ -10506,8 +10507,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'send_feedback') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -10548,7 +10549,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -10582,7 +10583,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Feedback Sent", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -10638,7 +10639,7 @@ EOD
     $message =~ s/\n\.\n/\n\. \n/g;
 
     if (!$readOnly) {
-        
+
     $from = "noreply\@fourmilab.ch" if !defined($from);
 
     my $zto = 'bitbucket@fourmilab.ch';
@@ -10684,7 +10685,7 @@ EOD
 
 
         if ($CGIargs{copy_sender}) {
-            
+
     open(MAIL, "|-:utf8", "/usr/lib/sendmail",
             "-fnoreply\@fourmilab.ch",
             $from) ||
@@ -10717,7 +10718,7 @@ for contributing to the improvement of The Hacker's Diet
 </p>
 EOD
 
-    
+
     my $pt = $CGIargs{message};
     $pt =~ s/\r\n/\n/g;
     my $t = $pt;
@@ -10757,13 +10758,13 @@ EOD
     append_history($user_file_name, 16, $category) if !$readOnly;
 
     } elsif ($CGIargs{q} eq 'test') {
-        
 
 
-    
+
+
     } elsif ($CGIargs{q} eq 'acctmgr') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -10804,7 +10805,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -10836,11 +10837,11 @@ EOD
     }
 
 
-    
+
     if (!$ui->{administrator}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Privilege Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -10903,7 +10904,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Account Manager", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -10952,7 +10953,7 @@ EOD
 
     my $acct_qual;
     my ($chk_all, $chk_act, $chk_inact) = ('', '', '');
-    
+
     my $acct_category = $CGIargs{acct_category};
     if (!defined($acct_category) || ($acct_category eq 'all')) {
         print($fh "<h3 class=\"acct_category\">All Accounts</h3>\n");
@@ -11007,28 +11008,28 @@ EOD
 EOD
 
 
-    
+
     my %accounts;
 
     if (!defined($acct_category)) {
         $acct_category = 'active';
     }
-    
+
     opendir(CD, "/server/pub/hackdiet/Users") ||
         die("Cannot open directory /server/pub/hackdiet/Users");
     for my $f (grep(!/\.\.?\z/, readdir(CD))) {
-            
+
         if ($acct_category ne 'all') {
             my $lti = time() - last_transaction_time($f);
             my $month = 30 * 24 * 60 * 60;
             if ((($acct_category eq 'active') && ($lti > $month)) ||
                 (($acct_category eq 'inactive') && ($lti < $month))) {
                 next;
-            }       
+            }
         }
-        
+
         open(FU, "<:utf8", "/server/pub/hackdiet/Users/$f/UserAccount.hdu") ||
-            die("Cannot open user account directory /server/pub/hackdiet/Users/$f/UserAccount.hdu");        
+            die("Cannot open user account directory /server/pub/hackdiet/Users/$f/UserAccount.hdu");
         my $ui = HDiet::user->new();
         $ui->load(\*FU);
         close(FU);
@@ -11062,7 +11063,7 @@ EOD
         my @months = $ui->enumerateMonths();
         my $nmonths = $#months + 1;
         $months[0] = '' if $nmonths == 0;
-        
+
         $naccts++;
         $npub++ if $ui->{public};
 
@@ -11087,7 +11088,7 @@ EOD
 </tr>
 EOD
     }
-    
+
     my $percentPub = int(($npub * 100) / $naccts);
 
     print $fh <<"EOD";
@@ -11117,8 +11118,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'do_admin_browseacct') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -11159,7 +11160,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -11191,11 +11192,11 @@ EOD
     }
 
 
-    
+
     if (!$ui->{administrator}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Privilege Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -11259,7 +11260,7 @@ EOD
     if (!defined($CGIargs{useracct})) {
         write_XHTML_prologue($fh, $homeBase, "Invalid Access Request", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -11315,13 +11316,13 @@ EOD
         write_XHTML_epilogue($fh, $homeBase);
         exit(0);
     }
-    
+
     $user_file_name = quoteUserName($CGIargs{useracct});
 
     if (!(-d "/server/pub/hackdiet/Users/$user_file_name")) {
         write_XHTML_prologue($fh, $homeBase, "Invalid Access Request", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -11390,8 +11391,8 @@ EOD
     next;
 
     } elsif ($CGIargs{q} eq 'do_admin_purgeacct') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -11432,7 +11433,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -11464,11 +11465,11 @@ EOD
     }
 
 
-    
+
     if (!$ui->{administrator}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Privilege Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -11532,7 +11533,7 @@ EOD
     if (!defined($CGIargs{useracct})) {
         write_XHTML_prologue($fh, $homeBase, "Invalid Access Request", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -11589,11 +11590,11 @@ EOD
         exit(0);
     }
 
-    
+
     if ($CGIargs{HDiet_password} ne $ui->{password}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Password Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -11657,7 +11658,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Delete User Account", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -11729,7 +11730,7 @@ EOD
         my $nmonths = $#months + 1;
         my $mont = 'month' . (($nmonths != 1) ? 's' : '');
 
-        
+
     my $tfn = timeXML(time());
     $tfn =~ s/:/./g;            # Avoid idiot tar treating time as hostname
     if ("/server/pub/hackdiet/Backups" ne '') {
@@ -11761,8 +11762,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'do_admin_delacct') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -11803,7 +11804,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -11835,11 +11836,11 @@ EOD
     }
 
 
-    
+
     if (!$ui->{administrator}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Privilege Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -11903,7 +11904,7 @@ EOD
     if (!defined($CGIargs{useracct})) {
         write_XHTML_prologue($fh, $homeBase, "Invalid Access Request", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -11960,11 +11961,11 @@ EOD
         exit(0);
     }
 
-    
+
     if ($CGIargs{HDiet_password} ne $ui->{password}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Password Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -12028,7 +12029,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Delete User Account", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -12106,7 +12107,7 @@ the database.  Return here after the logs have been purged.</h3>
 <h4 class="nav"><a href="/cgi-bin/HackDiet?q=acctmgr&amp;s=$session->{session_id}$tzOff">Return to account manager</a></h4>
 EOD
         } else {
-            
+
     my $tfn = timeXML(time());
     $tfn =~ s/:/./g;            # Avoid idiot tar treating time as hostname
     if ("/server/pub/hackdiet/Backups" ne '') {
@@ -12132,8 +12133,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'sessmgr') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -12174,7 +12175,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -12206,11 +12207,11 @@ EOD
     }
 
 
-    
+
     if (!$ui->{administrator}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Privilege Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -12273,7 +12274,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Session Manager", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -12316,7 +12317,7 @@ EOD
     }
 
 
-    
+
     my %sessions;
 
     opendir(CD, "/server/pub/hackdiet/Sessions") ||
@@ -12351,7 +12352,7 @@ EOD
 </tr>
 EOD
 
-    
+
     for my $f (sort({ lc($a) cmp lc($b)} keys(%sessions))) {
         open(FU, "<:utf8", "/server/pub/hackdiet/Sessions/$sessions{$f}.hds") ||
             die("Cannot open session /server/pub/hackdiet/Sessions/$sessions{$f}.hds");
@@ -12402,8 +12403,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'cookiemgr') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -12444,7 +12445,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -12476,11 +12477,11 @@ EOD
     }
 
 
-    
+
     if (!$ui->{administrator}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Privilege Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -12543,7 +12544,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Persistent Login Manager", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -12586,7 +12587,7 @@ EOD
     }
 
 
-    
+
     my %cookies;
 
     opendir(CD, "/server/pub/hackdiet/RememberMe") ||
@@ -12620,7 +12621,7 @@ EOD
 </tr>
 EOD
 
-    
+
 
     for my $f (sort({ lc($cookies{$a}->{login_name}) cmp lc($cookies{$b}->{login_name})} keys(%cookies))) {
         my $cook = $cookies{$f};
@@ -12664,8 +12665,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'do_admin_delcookie') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -12706,7 +12707,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -12738,11 +12739,11 @@ EOD
     }
 
 
-    
+
     if (!$ui->{administrator}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Privilege Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -12803,11 +12804,11 @@ EOD
     }
 
 
-    
+
     if (!defined($CGIargs{cookieid})) {
         write_XHTML_prologue($fh, $homeBase, "No Persistent Login Selected", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -12864,8 +12865,8 @@ EOD
         exit(0);
     }
 
-    
-    
+
+
     my %cookies;
 
     opendir(CD, "/server/pub/hackdiet/RememberMe") ||
@@ -12882,15 +12883,15 @@ EOD
     }
     closedir(CD);
 
-    
+
     if (defined($cookies{$CGIargs{cookieid}})) {
         my $cook = $cookies{$CGIargs{cookieid}};
 
-        
+
     if ($CGIargs{HDiet_password} ne $ui->{password}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Password Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -12970,8 +12971,8 @@ print(STDERR "Bogus delete cookie request for $CGIargs{cookieid}\n");
     next;
 
     } elsif ($CGIargs{q} eq 'globalstats') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -13012,7 +13013,7 @@ print(STDERR "Bogus delete cookie request for $CGIargs{cookieid}\n");
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -13044,11 +13045,11 @@ print(STDERR "Bogus delete cookie request for $CGIargs{cookieid}\n");
     }
 
 
-    
+
     if (!$ui->{administrator}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Privilege Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -13111,7 +13112,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Global Statistics", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -13164,8 +13165,8 @@ EOD
 
     my $hndays = 30;            # Number of days to analyse
     my $mincov = 80;            # Minimum coverage in percent to rank gain/loss
-    
-    
+
+
     my (@acchist, @pacchist);
     my ($acctotal, $pacctotal, $badgetotal) = (0, 0, 0);
     my (@ttrend, @pttrend);
@@ -13186,8 +13187,8 @@ EOD
     my %lu = ( "login_name", $lastuser . "xxx" );
     receive_aggregated_statistics_records(\%lu, $jdnow, undef);
 
-    
-    
+
+
     my ($cumaccts, $pcumaccts) = (0, 0);
     for (my $i = 0; $i <= $hndays; $i++) {
         $acchist[$i] = 0 if !defined($acchist[$i]);
@@ -13206,19 +13207,19 @@ EOD
         <th>All</th>
         <th>Public</th>
     </tr>
-    
+
     <tr>
         <th class="l">Active</th>
         <td>$cumaccts</td>
         <td>$pcumaccts</td>
     </tr>
-    
+
     <tr>
         <th class="l">Inactive</th>
         <td>$inacccts</td>
         <td>$pinaccts</td>
     </tr>
-    
+
     <tr>
         <th class="l">Total</th>
         <td>$naccts</td>
@@ -13233,8 +13234,8 @@ have badge generation enabled.
 </p>
 EOD
 
-    
-    
+
+
     my $balunits = HDiet::monthlog::ENERGY_ABBREVIATIONS->[$ui->{energy_unit}] . "/day";
     my $wunits = HDiet::monthlog::DELTA_WEIGHT_ABBREVIATIONS->[$ui->{display_unit}] . "/week";
 
@@ -13255,7 +13256,7 @@ EOD
     my $pmeanslopebal = gs_snum(sprintf("%.0f ", $pttslope *
                 (HDiet::monthlog::CALORIES_PER_WEIGHT_UNIT->[$ui->{display_unit}] /
                  HDiet::monthlog::CALORIES_PER_ENERGY_UNIT->[$ui->{energy_unit}])));
-    
+
     print $fh <<"EOD";
 <h2>Mean Gain/Loss</h2>
 
@@ -13264,14 +13265,14 @@ EOD
         <th colspan="2" class="blr">All Accounts</th>
         <th colspan="2" class="blr">Public Accounts</th>
     </tr>
-    
+
     <tr>
         <th>$balunits</th>
         <th>$wunits</th>
         <th class="bl">$balunits</th>
         <th>$wunits</th>
     </tr>
-    
+
     <tr>
         <td>$meanslopebal</td>
         <td>$meanslopeweek</td>
@@ -13287,13 +13288,13 @@ $hndays days are included.
 EOD
 
 
-    
+
     my $minslopeweek = gs_snum(sprintf("%.2f", $minslope * 7));
     my $minslopebal = gs_snum(sprintf("%.0f ", $minslope *
                 (HDiet::monthlog::CALORIES_PER_WEIGHT_UNIT->[$ui->{display_unit}] /
                  HDiet::monthlog::CALORIES_PER_ENERGY_UNIT->[$ui->{energy_unit}])));
     my $qminslopeuser = quoteHTML($minslopeuser);
-    
+
     my $pminslopeweek = gs_snum(sprintf("%.2f", $pminslope * 7));
     my $pminslopebal = gs_snum(sprintf("%.0f ", $pminslope *
                 (HDiet::monthlog::CALORIES_PER_WEIGHT_UNIT->[$ui->{display_unit}] /
@@ -13305,13 +13306,13 @@ EOD
                 (HDiet::monthlog::CALORIES_PER_WEIGHT_UNIT->[$ui->{display_unit}] /
                  HDiet::monthlog::CALORIES_PER_ENERGY_UNIT->[$ui->{energy_unit}])));
     my $qmaxslopeuser = quoteHTML($maxslopeuser);
-    
+
     my $pmaxslopeweek = gs_snum(sprintf("%.2f", $pmaxslope * 7));
     my $pmaxslopebal = gs_snum(sprintf("%.0f ", $pmaxslope *
                 (HDiet::monthlog::CALORIES_PER_WEIGHT_UNIT->[$ui->{display_unit}] /
                  HDiet::monthlog::CALORIES_PER_ENERGY_UNIT->[$ui->{energy_unit}])));
     my $qpmaxslopeuser = quoteHTML($pmaxslopeuser);
-    
+
     sub gs_snum {
         my ($v) = @_;
         $v =~ s/\-/&minus;/;
@@ -13319,7 +13320,7 @@ EOD
         return $v;
     }
 
-    
+
     print $fh <<"EOD";
 <h2>Gain and Loss Extrema</h2>
 
@@ -13329,7 +13330,7 @@ EOD
         <th colspan="3" class="blr">All Accounts</th>
         <th colspan="3" class="blr">Public Accounts</th>
     </tr>
-    
+
     <tr>
         <th class="v"></th>
         <th class="bl">Name</th>
@@ -13339,7 +13340,7 @@ EOD
         <th>$balunits</th>
         <th>$wunits</th>
     </tr>
-    
+
     <tr>
         <th class="l">Fastest loss</th>
         <td class="c">$qminslopeuser</td>
@@ -13349,8 +13350,8 @@ EOD
         <td>$pminslopebal</td>
         <td>$pminslopeweek</td>
     </tr>
-    
-    
+
+
     <tr>
         <th class="l">Fastest gain</th>
         <td class="c">$qmaxslopeuser</td>
@@ -13367,8 +13368,8 @@ Only accounts with $mincov% or more weight entries logged are included.
 </p>
 EOD
 
-    
-    
+
+
     print $fh <<"EOD";
 <h2>Log Update Frequency</h2>
 
@@ -13378,17 +13379,17 @@ EOD
         <th colspan="3" class="blr">All Accounts</th>
         <th colspan="3" class="blr">Public Accounts</th>
     </tr>
-    
+
     <tr>
         <th class="v">Days</th>
         <th class="bl">Accounts</th>
         <th>Percent</th>
         <th>Cumulative</th>
-        
+
         <th class="bl">Accounts</th>
         <th>Percent</th>
         <th>Cumulative</th>
-    </tr>  
+    </tr>
 EOD
 
     my ($cum, $pcum) = (0, 0);
@@ -13417,13 +13418,13 @@ EOD
 
 
     write_XHTML_epilogue($fh, $homeBase);
-    
-    
+
+
     my $acctrend = 0;
     my $uljd;
     my @utrend;
     my $weightdays = 0;
-    
+
     sub receive_aggregated_statistics_records {
         my ($user, $jd, $weight, $trend, $rung, $flag, $comment) = @_;
 
@@ -13448,7 +13449,7 @@ EOD
                     ($user->{badge_trend} != 0));
 
                 if ($acctrend && ($uljd == $jdnow)) {
-                    
+
 #print(STDERR "$lastuser trend complete.\n");
     my $ufitter = HDiet::trendfit->new();
     for (my $i = 0; $i <= $#utrend; $i++) {
@@ -13467,10 +13468,10 @@ EOD
 #if (($#utrend + 1) == 0) {
 #    my $sjd = jd_to_RFC_3339_date($jd);
 #    print(STDERR "Utrend zero for user $user->{login_name} at JD $jd, $sjd  Lastuser = $lastuser\n");
-#}                
+#}
                     my $coverage = int((($weightdays / ($#utrend + 1)) * 100) + 0.5);
-                    
-                    
+
+
     if ($coverage >= $mincov) {
         my $uslope = $ufitter->fitSlope();
         if (($uslope < 0) && ($uslope < $minslope)) {
@@ -13500,12 +13501,12 @@ EOD
 
                 }
             }
-            
+
             $lastuser = $user->{login_name};
             $lastpubname = $user->{public} ? $user->{public_name} : '';
             $weightdays = 0;
             $totuser++;
-            
+
             $acctrend = 0;
             if ($jd == $jdthen) {
                 $acctrend = 1;
@@ -13524,8 +13525,8 @@ EOD
 
 
     } elsif ($CGIargs{q} eq 'synthdata') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -13566,7 +13567,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -13599,11 +13600,11 @@ EOD
 
 
     if (!$assumed_identity) {
-        
+
     if (!$ui->{administrator}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Privilege Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -13667,7 +13668,7 @@ EOD
 
     write_XHTML_prologue($fh, $homeBase, "Synthetic Data Generator", undef, $session->{handheld});
     generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-    
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -13720,14 +13721,14 @@ EOD
 
     my $npert = 5;
 
-    
+
     if (defined($CGIargs{from_y}) && ($CGIargs{from_y} ne '')) {
         my ($from_y, $from_m, $from_d) = ($CGIargs{from_y}, $CGIargs{from_m}, $CGIargs{from_d});
         my ($to_y, $to_m, $to_d) = ($CGIargs{to_y}, $CGIargs{to_m}, $CGIargs{to_d});
         my ($field, $fillfrac, $start_value, $end_value) =
             ($CGIargs{field}, $CGIargs{fill_frac}, $CGIargs{start_value}, $CGIargs{end_value});
         my $format = ($field eq 'weight') ? '%.1f' : '%.0f';
-        
+
         $start_value =~ s/,/./;
         $end_value =~ s/,/./;
 
@@ -13767,12 +13768,12 @@ EOD
     }
 
 
-    
+
     print $fh <<"EOD";
 <table class="syndata">
 EOD
 
-    
+
     my ($ysel, $msel, $dsel) = ("") x 3;
     my (@fm_selected, @fd_selected);
 
@@ -13792,7 +13793,7 @@ EOD
 EOD
 
     my $mid = "fm_";
-    
+
     for (my $i = 1; $i <= $#monthNames; $i++) {
         print $fh <<"EOD";
         <option id="$mid$i" value="$i"$fm_selected[$i]>$monthNames[$i]</option>
@@ -13809,7 +13810,7 @@ EOD
 EOD
 
     my $did = "fd_";
-    
+
     for (my $i = 1; $i <= 31; $i++) {
         print $fh <<"EOD";
         <option id="$did$i"$fd_selected[$i]>$i</option>
@@ -13826,7 +13827,7 @@ EOD
 </tr>
 EOD
 
-    
+
     print $fh <<"EOD";
 <tr>
     <th class="l">End date:</th>
@@ -13836,7 +13837,7 @@ EOD
 EOD
 
     $mid = "tm_";
-    
+
     for (my $i = 1; $i <= $#monthNames; $i++) {
         print $fh <<"EOD";
         <option id="$mid$i" value="$i"$fm_selected[$i]>$monthNames[$i]</option>
@@ -13853,7 +13854,7 @@ EOD
 EOD
 
     $did = "td_";
-    
+
     for (my $i = 1; $i <= 31; $i++) {
         print $fh <<"EOD";
         <option id="$did$i"$fd_selected[$i]>$i</option>
@@ -13871,7 +13872,7 @@ EOD
 EOD
 
 
-    
+
      print $fh <<"EOD";
 <tr>
     <th class="l">Field:</th>
@@ -13895,7 +13896,7 @@ EOD
 </tr>
 EOD
 
-    
+
     print $fh <<"EOD";
 <tr>
     <th class="l">Start value:</th>
@@ -13915,7 +13916,7 @@ EOD
 EOD
 
 
-    
+
     print $fh <<"EOD";
 <tr>
     <td colspan="1"></td>
@@ -13967,8 +13968,8 @@ EOD
     write_XHTML_epilogue($fh, $homeBase);
 
     } elsif ($CGIargs{q} eq 'do_admin_forceclose') {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -14009,7 +14010,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-    
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -14041,11 +14042,11 @@ EOD
     }
 
 
-    
+
     if (!$ui->{administrator}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Privilege Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -14106,11 +14107,11 @@ EOD
     }
 
 
-    
+
     if (!defined($CGIargs{sessionid})) {
         write_XHTML_prologue($fh, $homeBase, "No Session Selected", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -14168,12 +14169,12 @@ EOD
     }
 
 
-    
+
     if (($CGIargs{sessionid} !~ m/^[0-9FGJKQW]{40}$/) ||
         (!-f "/server/pub/hackdiet/Sessions/$CGIargs{sessionid}.hds")) {
         write_XHTML_prologue($fh, $homeBase, "No Such Session", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -14231,7 +14232,7 @@ EOD
     }
 
 
-    
+
     my %sessions;
 
     opendir(CD, "/server/pub/hackdiet/Sessions") ||
@@ -14255,11 +14256,11 @@ EOD
         }
     }
 
-    
+
     if ($CGIargs{HDiet_password} ne $ui->{password}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Password Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -14325,7 +14326,7 @@ EOD
     my $aufn = $user_file_name;     # Save administrator's user file name
     $user_file_name = quoteUserName($user);
 
-    
+
     if ((!$readOnly) && (-f "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")
         && open(FS, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/ActiveSession.hda")) {
         my $asn = load_active_session(\*FS);
@@ -14357,9 +14358,9 @@ print(STDERR "Deleting bogus open session $CGIargs{sessionid} for user $user_fil
     next;
 
     } elsif (0 && ($CGIargs{q} eq 'invite')) {
-        
+
     if (0) {
-        
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -14400,7 +14401,7 @@ print(STDERR "Deleting bogus open session $CGIargs{sessionid} for user $user_fil
     }
     my $user_file_name = quoteUserName($user_name);
 
-        
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -14432,11 +14433,11 @@ print(STDERR "Deleting bogus open session $CGIargs{sessionid} for user $user_fil
     }
 
 
-        
+
     if (!$ui->{administrator}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Privilege Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -14499,7 +14500,7 @@ EOD
 
         write_XHTML_prologue($fh, $homeBase, "Request Invitation Codes", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -14565,9 +14566,9 @@ EOD
     }
 
     } elsif (0 && ($CGIargs{q} eq 'generate_invitations')) {
-        
+
     if (0) {
-        
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -14608,7 +14609,7 @@ EOD
     }
     my $user_file_name = quoteUserName($user_name);
 
-        
+
     open(FU, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu") ||
         die("Cannot open user account file /server/pub/hackdiet/Users/$user_file_name/UserAccount.hdu");
     my $ui = HDiet::user->new();
@@ -14640,11 +14641,11 @@ EOD
     }
 
 
-        
+
     if (!$ui->{administrator}) {
         write_XHTML_prologue($fh, $homeBase, "Administrator Privilege Required", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -14707,7 +14708,7 @@ EOD
 
         write_XHTML_prologue($fh, $homeBase, "Invitation Codes Generated", undef, $session->{handheld});
         generate_XHTML_navigation_bar($fh, $homeBase, $session->{session_id}, undef, undef, $browse_public, $timeZoneOffset);
-        
+
 
     if ($readOnly) {
         print $fh <<"EOD";
@@ -14804,8 +14805,8 @@ EOD
 
 
     } else {
-        
-    
+
+
     $CGIargs{s} = '' if !defined($CGIargs{s});
     if ($CGIargs{s} !~ m/^[0-9FGJKQW]{40}$/) {
         die("Invalid (probably spoofed) session identifier ($CGIargs{s})");
@@ -14853,7 +14854,7 @@ EOD
 <h4 class="nav"><a href="/cgi-bin/HackDiet?q=account&amp;s=$session->{session_id}$tzOff">Back to account page</a></h4>
 <pre>
 EOD
-    
+
     use Data::Dumper;
     print($fh Data::Dumper->Dump([\%CGIargs, \%ENV], ['*CGIargs', '*ENV']));
 
@@ -14867,8 +14868,8 @@ EOD
         exit(0);
     }
 
-    
-    
+
+
     sub propagate_trend {
         my ($user, $first, $canon) = @_;
 
@@ -14877,7 +14878,7 @@ EOD
 
         my @logs = $user->enumerateMonths();
         my $user_file_name = quoteUserName($user->{login_name});
-        
+
     my $ifirst;
 
     for ($ifirst = 0; $ifirst <= $#logs; $ifirst++) {
@@ -14886,7 +14887,7 @@ EOD
         }
     }
 
-        
+
     my $mlog = HDiet::monthlog->new();
 
     my $i = $ifirst;
@@ -14896,7 +14897,7 @@ EOD
     close(FL);
 
     if ($canon) {
-        
+
     if ($canon) {
         my $ncanon = 0;
 
@@ -14916,7 +14917,7 @@ EOD
         }
     }
 
-        
+
     $mlog->{last_modification_time} = time();
     open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
         die("Cannot create monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
@@ -14934,7 +14935,7 @@ EOD
 
 
         for ($i = $ifirst + 1; $i <= $#logs; $i++) {
-            
+
     $mlog = HDiet::monthlog->new();
 
     open(FL, "<:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
@@ -14942,7 +14943,7 @@ EOD
     $mlog->load(\*FL);
     close(FL);
 
-    
+
     if ($lunit != $mlog->{log_unit}) {
         $ltrend *= WEIGHT_CONVERSION->[$lunit][$mlog->{log_unit}];
 #print("Log: $logs[$i]  Converted trend unit from $lunit to $mlog->{log_unit}<br>\n");
@@ -14955,7 +14956,7 @@ EOD
     $ltrend =~ s/(\.[^0]*)0+$/$1/;
     $ltrend =~ s/\.$//;
 
-    
+
     if ($canon) {
         my $ncanon = 0;
 
@@ -14980,7 +14981,7 @@ EOD
     $mlog->{trend_carry_forward} = $ltrend;
     $mlog->computeTrend();
 
-    
+
     $mlog->{last_modification_time} = time();
     open(FL, ">:utf8", "/server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb") ||
         die("Cannot create monthly log file /server/pub/hackdiet/Users/$user_file_name/$logs[$i].hdb");
@@ -14993,7 +14994,7 @@ EOD
     undef($mlog);
 
         }
-        
+
         if ($user->{badge_trend} != 0) {
             open(FB, ">/server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png") ||
                 die("Cannot update monthly log file /server/pub/hackdiet/Users/$user_file_name/BadgeImageNew.png");
@@ -15005,7 +15006,7 @@ EOD
         }
    }
 
-    
+
     sub append_history {
         my ($user_file, $type, $extra) = @_;
 
@@ -15020,7 +15021,7 @@ EOD
         clusterCopy("/server/pub/hackdiet/Users/$user_file/History.hdh");
     }
 
-    
+
     sub update_last_transaction {
         my ($user_file) = @_;
 
@@ -15036,7 +15037,7 @@ EOD
         clusterCopy("/server/pub/hackdiet/Users/$user_file/LastTransaction.hdl");
    }
 
-    
+
     sub last_transaction_time {
         my ($user_file) = @_;
 
@@ -15055,8 +15056,8 @@ EOD
             return 0;
         }
    }
-   
-   
+
+
     sub in {
         my ($fh, $default) = @_;
         my $s;
@@ -15073,7 +15074,7 @@ EOD
     }
 
 
-    
+
     sub is_user_session_open {
         my ($user_name) = @_;
 
@@ -15094,7 +15095,7 @@ EOD
    }
 
 
-    
+
     sub parseWeight {
         my ($w, $unit) = @_;
 
@@ -15114,7 +15115,7 @@ EOD
         return $n;
     }
 
-    
+
     sub parseSignedWeight {
         my ($w, $unit) = @_;
         my $sgn = 1;
@@ -15132,7 +15133,7 @@ EOD
     }
 
 
-    
+
     sub wrapText {
         my ($t, $columns) = @_;
 
@@ -15172,7 +15173,7 @@ EOD
 
 
 
-    
+
     sub print_command_line_help {
         print << "EOD";
 Usage: HackDiet.pl [ options ]
@@ -15186,7 +15187,7 @@ Version 1.0, August 2007
 EOD
    }
 
-    
+
     #   Return least of arguments
     sub min {
         my $v = 1e308;
@@ -15221,7 +15222,7 @@ EOD
         return sprintf("%.0f", shift());
     }
 
-    
+
     sub do_command {
         my ($cmd, $annotation) = @_;
 
@@ -15239,14 +15240,14 @@ EOD
         }
     }
 
-    
+
 #    sub etime {
 #        my ($sec, $min, $hour, $mday, $mon, $year) = localtime($_[0]);
 #        return sprintf("%d-%02d-%02d %02d:%02d",
 #            $year + 1900, $mon + 1, $mday, $hour, $min);
 #    }
 
-    
+
     sub toHex {
         my ($s) = @_;
 
@@ -15258,7 +15259,7 @@ EOD
         return $h;
     }
 
-    
+
     sub isCurrentMonth {
         my ($lyear, $lmonth) = @_;
 
@@ -15280,7 +15281,7 @@ EOD
                ($server_jd <= ($next_month_jd - 1));
     }
 
-    
+
     sub encodeDomainName {
         my ($idn) = @_;
 
@@ -15295,13 +15296,13 @@ EOD
         return $dn;
     }
 
-    
+
     sub validMailDomain {
         my ($dn) = @_;
 
         my $nmx = `dig +short $dn MX | egrep -v ' 127\.0\.0.' | wc -l`;
         $nmx =~ s/\s//g;
-        
+
         if ($nmx == 0) {
             $nmx = `dig +short $dn A | egrep -v ' 127\.0\.0.' | wc -l`;
             $nmx =~ s/\s//g;
@@ -15310,11 +15311,11 @@ EOD
         return $nmx > 0;
     }
 
-    
+
     sub drawText {
         my ($img, $text, $font, $size, $angle, $x, $y, $alignh, $alignv, $colour) = @_;
 
-        my $fontFile = "/server/bin/httpd/cgi-bin/HDiet/Fonts/$font.ttf";
+        my $fontFile = "$cgiBin/HDiet/Fonts/$font.ttf";
 
         if (($alignh ne 'o') || ($alignv ne 'o')) {
             my @ext =  GD::Image->stringFT($colour, $fontFile, $size, $angle, $x, $y, $text);
@@ -15343,7 +15344,7 @@ EOD
     }
 
 
-    
+
     sub parse_cgi_arguments {
         my $data;
 #   NOTE: On Perl 5.8.5 we needed to read the CGI POST arguments
@@ -15357,7 +15358,7 @@ EOD
 #            binmode(STDIN, ":raw");
 #        }
         binmode(STDIN, ":raw");
-        
+
         my $query = new CGI;
 #print("Content-type: text/plain\r\n\r\nQuery:\n");
 #use Data::Dumper;
@@ -15394,7 +15395,7 @@ for my $k (keys %CGIfields) {
         return %CGIfields;
     }
 
-    
+
     sub ndz {
         return defined($_[0]) ? $_[0] : 0;
     }
@@ -15402,5 +15403,3 @@ for my $k (keys %CGIfields) {
     sub ndb {
         return defined($_[0]) ? $_[0] : '';
     }
-
-
