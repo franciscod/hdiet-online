@@ -8,4 +8,6 @@
 
 > -- John Walker on https://www.fourmilab.ch/hackdiet/online/hdo.html
 
-This is an attempt to get HDO up and running, started by someone with no prior experience whatsoever with Perl.
+This is an attempt to get HDO up and running, started by someone with no prior experience whatsoever with Perl. Thank you for releasing the source, John!
+
+If you use Vagrant, `vagrant up` will do, and go [here](http://localhost:12380/cgi-bin/HackDiet) to access the app. It seems to work!
