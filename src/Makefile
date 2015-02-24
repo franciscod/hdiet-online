@@ -1,4 +1,5 @@
-WEBDIR = /var/www/hackdiet/online
+WWW = /var/www
+WEBDIR = $(WWW)/hackdiet/online
 
 CGIDIR = /usr/lib/cgi-bin
 
@@ -25,6 +26,8 @@ publish:
 	cp -pr assets/* $(WEBDIR)
 	
 	cp -p webapp.html hdiet.css hdiet_handheld.css hdiet.js hackersdiet.dtd hackdiet_db.css wz_jsgraphics.js $(WEBDIR)
+
+	cp -p index.html $(WWW)
 
 	cp -p HackDiet.pl $(CGIDIR)/HackDiet.NEW
 	chmod 755 $(CGIDIR)/HackDiet.NEW

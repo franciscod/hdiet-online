@@ -14,4 +14,4 @@ cd $SRCDIR
 
 sudo make publish
 
-echo "done! go to http://localhost/cgi-bin/HackDiet/"
+echo "done! go to http://localhost/"
