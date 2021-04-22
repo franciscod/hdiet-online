@@ -4,11 +4,13 @@ This is an attempt to get HDO up and running, started by someone with no prior e
 
 ## running it
 
-Run with `docker-compose`:
+(requires docker and docker-compose)
 
-    docker-compose up --build
+    make
 
 Then access [locally at port 12380](http://localhost:12380).
+
+Data will be saved on `data/` locally (mounted on `/var/lib/hackdiet` inside the container). You can customize this on docker-compose.yml
 
 
 ## perl hackers wanted

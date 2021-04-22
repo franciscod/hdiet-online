@@ -12,9 +12,6 @@ RUN apt-get update && apt-get install -y \
     libxml-libxml-perl \
     weblint-perl
 
-RUN mkdir -p /var/lib/hackdiet/Users /var/lib/hackdiet/Sessions
-RUN chown -R www-data:www-data /var/lib/hackdiet
-
 COPY src/ /app
 
 WORKDIR /app
