@@ -13,7 +13,6 @@
     package HDiet::user;
 
     use Encode qw(encode_utf8);
-    use Crypt::OpenSSL::AES;
     use Digest::SHA  qw(sha1_hex);
     use Crypt::CBC;
 
@@ -687,7 +686,6 @@ EOD
 
         my $crypto = Crypt::CBC->new(
                 -key => "Super duper top secret!",
-                -cipher => "Crypt::OpenSSL::AES"
                                     );
         my $encrypted = $crypto->encrypt($plain);
         my $ecrc = sprintf("%08x", $crc->strcrc32($encrypted));
