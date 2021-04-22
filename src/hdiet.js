@@ -30,6 +30,8 @@
     }
 
     function checkSecure() {
+        return;
+
         if ((!location.protocol.match(/^https:/i)) &&
             (location.hostname != "server1.fourmilab.ch")) {
             alert("Warning!  This document appears to have been " +
