@@ -11,7 +11,7 @@
     package HDiet::Cluster;
 
     use Time::HiRes qw( gettimeofday );
-    use Digest::SHA1  qw(sha1_hex);
+    use Digest::SHA  qw(sha1_hex);
 
     require Exporter;
 

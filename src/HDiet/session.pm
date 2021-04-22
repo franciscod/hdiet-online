@@ -11,7 +11,7 @@
     package HDiet::session;
 
     use Encode qw(encode_utf8);
-    use Digest::SHA1  qw(sha1_hex);
+    use Digest::SHA  qw(sha1_hex);
 
     require Exporter;
     our @ISA = qw(Exporter);

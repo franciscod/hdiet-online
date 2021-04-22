@@ -13,8 +13,8 @@
     package HDiet::user;
 
     use Encode qw(encode_utf8);
-    use Digest::SHA1  qw(sha1_hex);
     use Crypt::OpenSSL::AES;
+    use Digest::SHA  qw(sha1_hex);
     use Crypt::CBC;
 
     use HDiet::html;

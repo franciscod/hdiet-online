@@ -9,7 +9,7 @@
     my $dataDir = "/var/lib/hackdiet";
 
     use File::Temp qw(tempfile);
-    use Digest::SHA1  qw(sha1_hex);
+    use Digest::SHA  qw(sha1_hex);
 
     use constant FILE_VERSION => 1;
 

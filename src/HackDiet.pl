@@ -80,7 +80,7 @@ This program is in the public domain.
     use Time::Local;
     use Encode qw(decode_utf8);
     use GD;
-    use Digest::SHA1  qw(sha1_hex);
+    use Digest::SHA  qw(sha1_hex);
     use XML::LibXML;
     use XML::LibXML::Common qw(:w3c);       # XML/DOM node type mnemonics
     use HDiet::Julian qw(MONTH_ABBREVIATIONS :DEFAULT);
