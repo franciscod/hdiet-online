@@ -3176,11 +3176,11 @@ if (0) {        # Set to 1 to investigate reports of account creation problems
         if ($CGIargs{HDiet_email} !~ m/@/) {
             push(@goofs, "E-mail address contains no '\@' sign");
         } else {
-            $CGIargs{HDiet_email} =~ m/@(.*)$/;
-            if (!validMailDomain(encodeDomainName($1))) {
-                my $dn = quoteHTML($1);
-                push(@goofs, "Domain name <tt>$dn</tt> in your E-mail address is invalid");
-            }
+            # $CGIargs{HDiet_email} =~ m/@(.*)$/;
+            # if (!validMailDomain(encodeDomainName($1))) {
+            #     my $dn = quoteHTML($1);
+            #     push(@goofs, "Domain name <tt>$dn</tt> in your E-mail address is invalid");
+            # }
         }
     }
 
@@ -3851,11 +3851,11 @@ EOD
         if ($CGIargs{HDiet_email} !~ m/@/) {
             push(@goofs, "E-mail address contains no '\@' sign");
         } else {
-            $CGIargs{HDiet_email} =~ m/@(.*)$/;
-            if (!validMailDomain(encodeDomainName($1))) {
-                my $dn = quoteHTML($1);
-                push(@goofs, "Domain name <tt>$dn</tt> in your E-mail address is invalid");
-            }
+            # $CGIargs{HDiet_email} =~ m/@(.*)$/;
+            # if (!validMailDomain(encodeDomainName($1))) {
+            #     my $dn = quoteHTML($1);
+            #     push(@goofs, "Domain name <tt>$dn</tt> in your E-mail address is invalid");
+            # }
         }
     }
 
