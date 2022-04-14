@@ -1,4 +1,4 @@
-FROM ubuntu:precise
+FROM ubuntu:trusty
 
 RUN apt-get update && apt-get install -y \
     apache2 \
@@ -16,6 +16,7 @@ COPY src/ /app
 
 WORKDIR /app
 RUN make publish
+RUN chown www-data:www-data /usr/lib/cgi-bin/*
 
 RUN cd /etc/apache2/mods-enabled/; ln -s ../mods-available/cgi.load
 

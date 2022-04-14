@@ -1,4 +1,4 @@
-WWW = /var/www
+WWW = /var/www/html
 WEBDIR = $(WWW)/hackdiet/online
 
 CGIDIR = /usr/lib/cgi-bin
